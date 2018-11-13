@@ -27,94 +27,94 @@ using System.Diagnostics;
 
 namespace OPFService
 {
-  class NetworkService
-  {
-    OPFDictionary dict;
-    OPFGroup group;
-    PwnedPasswordsAPI pwned = new PwnedPasswordsAPI();
-    private void writeLog(string message, System.Diagnostics.EventLogEntryType level)
+    class NetworkService
     {
-      using (EventLog eventLog = new EventLog("Application"))
-      {
-        eventLog.Source = "Application";
-        eventLog.WriteEntry(message, level, 100, 1);
-      }
-    }
-
-    public NetworkService(OPFDictionary d, OPFGroup g)
-    {
-      dict = d;
-      group = g;
-    }
-
-    public void main(Socket listener)
-    {
-      IPAddress ip = IPAddress.Parse("127.0.0.1");
-      IPEndPoint local = new IPEndPoint(ip, 5999);
-      //Socket listener = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-
-      try
-      {
-        listener.Bind(local);
-        listener.Listen(64);
-        writeLog("OpenPasswordFilter is now running.", EventLogEntryType.Information);
-        while (true)
+        OPFDictionary dict;
+        OPFGroup group;
+        PwnedPasswordsAPI pwned = new PwnedPasswordsAPI();
+        private void writeLog(string message, System.Diagnostics.EventLogEntryType level)
         {
-          Socket client = listener.Accept();
-          //writeLog("Connection accepted.", EventLogEntryType.Information);
-          new Thread(() => handle(client)).Start();
-        }
-      }
-      catch (Exception e)
-      {
-        writeLog(e.Message, EventLogEntryType.Error);
-        writeLog("Unable to bind local port", EventLogEntryType.Error);
-      }
-    }
-
-    /*
-     * if (user is in one of the listed groups or there are no groups listed) then
-     *   if username/password combo is not acceptable then return "false" 
-     * return "true"
-     * */
-
-    public void handle(Socket client)
-    {
-      try
-      {
-        NetworkStream netStream = new NetworkStream(client);
-        StreamReader istream = new StreamReader(netStream);
-        StreamWriter ostream = new StreamWriter(netStream);
-        bool passwordIsBad = false;
-        string command = istream.ReadLine();
-        if (command == "test")
-        {
-          string username = istream.ReadLine();
-          string password = istream.ReadLine();
-          writeLog("Validating password for user " + username, EventLogEntryType.Information);
-          if (group.contains(username))
-          {
-            //writeLog("User in a restricted group", EventLogEntryType.Information);
-            passwordIsBad = dict.contains(password, username);
-            if (passwordIsBad == false)
+            using (EventLog eventLog = new EventLog("Application"))
             {
-              passwordIsBad = pwned.checkHashPrefix(password);
+                eventLog.Source = "Application";
+                eventLog.WriteEntry(message, level, 100, 1);
             }
-          }
-          ostream.WriteLine(passwordIsBad ? "false" : "true");
-          ostream.Flush();
         }
-        else
+
+        public NetworkService(OPFDictionary d, OPFGroup g)
         {
-          ostream.WriteLine("ERROR");
-          ostream.Flush();
+            dict = d;
+            group = g;
         }
-      }
-      catch (Exception e)
-      {
-        writeLog(e.Message, EventLogEntryType.Error);
-      }
-      client.Close();
+
+        public void main(Socket listener)
+        {
+            IPAddress ip = IPAddress.Parse("127.0.0.1");
+            IPEndPoint local = new IPEndPoint(ip, 5999);
+            //Socket listener = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+
+            try
+            {
+                listener.Bind(local);
+                listener.Listen(64);
+                writeLog("OpenPasswordFilter is now running.", EventLogEntryType.Information);
+                while (true)
+                {
+                    Socket client = listener.Accept();
+                    //writeLog("Connection accepted.", EventLogEntryType.Information);
+                    new Thread(() => handle(client)).Start();
+                }
+            }
+            catch (Exception e)
+            {
+                writeLog(e.Message, EventLogEntryType.Error);
+                writeLog("Unable to bind local port", EventLogEntryType.Error);
+            }
+        }
+
+        /*
+         * if (user is in one of the listed groups or there are no groups listed) then
+         *   if username/password combo is not acceptable then return "false" 
+         * return "true"
+         * */
+
+        public void handle(Socket client)
+        {
+            try
+            {
+                NetworkStream netStream = new NetworkStream(client);
+                StreamReader istream = new StreamReader(netStream);
+                StreamWriter ostream = new StreamWriter(netStream);
+                bool passwordIsBad = false;
+                string command = istream.ReadLine();
+                if (command == "test")
+                {
+                    string username = istream.ReadLine();
+                    string password = istream.ReadLine();
+                    writeLog("Validating password for user " + username, EventLogEntryType.Information);
+                    if (group.contains(username))
+                    {
+                        //writeLog("User in a restricted group", EventLogEntryType.Information);
+                        passwordIsBad = dict.contains(password, username);
+                        if (Properties.Settings.Default.PwnedPasswordsAPIEnabled && passwordIsBad == false)
+                        {
+                            passwordIsBad = pwned.checkHashPrefix(password);
+                        }
+                    }
+                    ostream.WriteLine(passwordIsBad ? "false" : "true");
+                    ostream.Flush();
+                }
+                else
+                {
+                    ostream.WriteLine("ERROR");
+                    ostream.Flush();
+                }
+            }
+            catch (Exception e)
+            {
+                writeLog(e.Message, EventLogEntryType.Error);
+            }
+            client.Close();
+        }
     }
-  }
 }
