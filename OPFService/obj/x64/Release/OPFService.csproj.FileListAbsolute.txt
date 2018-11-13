@@ -25,3 +25,12 @@ C:\Users\robert.brock.AGNET\Source\Repos\OpenPasswordFilter\OPFService\obj\x64\R
 C:\Users\robert.brock.AGNET\Source\Repos\OpenPasswordFilter\OPFService\obj\x64\Release\OPFService.ProjectInstaller.resources
 C:\Users\robert.brock.AGNET\Source\Repos\OpenPasswordFilter\OPFService\obj\x64\Release\OPFService.csproj.GenerateResource.Cache
 C:\Users\robert.brock.AGNET\Source\Repos\OpenPasswordFilter\OPFService\obj\x64\Release\OPFService.csprojResolveAssemblyReference.cache
+C:\_GIT\OpenPasswordFilter\x64\Release\OPFService.exe.config
+C:\_GIT\OpenPasswordFilter\OPFService\obj\x64\Release\OPFService.exe
+C:\_GIT\OpenPasswordFilter\OPFService\obj\x64\Release\OPFService.pdb
+C:\_GIT\OpenPasswordFilter\x64\Release\OPFService.exe
+C:\_GIT\OpenPasswordFilter\x64\Release\OPFService.pdb
+C:\_GIT\OpenPasswordFilter\OPFService\obj\x64\Release\OPFService.csprojResolveAssemblyReference.cache
+C:\_GIT\OpenPasswordFilter\OPFService\obj\x64\Release\OPFService.OPFService.resources
+C:\_GIT\OpenPasswordFilter\OPFService\obj\x64\Release\OPFService.ProjectInstaller.resources
+C:\_GIT\OpenPasswordFilter\OPFService\obj\x64\Release\OPFService.csproj.GenerateResource.Cache
