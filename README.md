@@ -29,11 +29,11 @@ of forbidden values, the pwnedpasswords API of [haveibeenpwned.com](https://have
 
 Goal of this Fork
 -----------------
-- Handle very large 
--> There is no more 32Bit support
-- More configuration options, currently 
--> Configureable path for password lists
--> haveibeenpwned API enable/disable ability
+- Handle very large password lists  
+-> There is no more 32Bit support  
+- More configuration options, currently  
+-> Configureable path for password lists  
+-> haveibeenpwned API enable/disable ability  
 
 Installation
 ------------
