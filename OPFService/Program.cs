@@ -63,6 +63,7 @@ namespace OPFService
 
         protected override void OnShutdown()
         {
+            writeLog("OpenPasswordFilter goin down", EventLogEntryType.Information);
             base.OnShutdown();
             //listener.Shutdown(SocketShutdown.Both);
             worker.Abort();
