@@ -19,7 +19,6 @@ This is where OpenPasswordFilter comes in -- an open source solution to add basi
 passwords, as well as a check against [haveibeenpwned.com](https://haveibeenpwned.com/)'s wonderful API.
 
 OPF is comprised of two main parts:
-
    1. OpenPasswordFilter.dll -- this is a custom password filter DLL that can be loaded by LSASS to vet incoming password changes.
    2. OPFService.exe -- this is a C#-based service binary that provides a local user-space service for maintaining the dictionary and servicing requests.
   
@@ -28,51 +27,47 @@ of forbidden values, the pwnedpasswords API of [haveibeenpwned.com](https://have
 
 **NOTE** The current version is pretty beta!  I have tested it on some of my DCs, but your mileage may vary and you may wish to test in a safe location before using this in production.
 
+Goal of this Fork
+-----------------
+- Handle very large 
+-> There is no more 32Bit support
+- More configuration options, currently 
+-> Configureable path for password lists
+-> haveibeenpwned API enable/disable ability
+
 Installation
 ------------
 You can download a precompiled 64-bit version of OPF from the following link:
 
-[OPF-beta.zip](https://github.com/brockrob/OpenPasswordFilter/raw/master/OPF-beta.zip)
+[OPFService.exe](https://github.com/ForumSchlampe/OpenPasswordFilter/tree/master/OPFService/bin/x64/Release)
+[OpenPasswordFilter.dll](-missing-)
 
-You will want to configure the DLL so that Windows will load it for filtering passwords.  Note that you will have to do this
-on all domain controllers, as any of them may end up servicing a password change request.  Here is a link to Microsoft's
-documentation for setting up a password filter:
-
-    https://msdn.microsoft.com/en-us/library/windows/desktop/ms721766(v=vs.85).aspx
-    
-The bottom line is this:
-
+   
   1. Copy `OpenPasswordFilter.dll` to `%WINDIR%\System32`
-  2. Configure the `HKLM\SYSTEM\CurrentControlSet\Control\Lsa\Notification Packages` registry key with the DLL name
   
-Note, you do not include the `.dll` extension in the registry key -- just `OpenPasswordFilter`.
+  2. Configure the `HKLM\SYSTEM\CurrentControlSet\Control\Lsa\Notification Packages` registry key with the DLL name
+  **Note** do not include the `.dll` extension in the registry key -- just `OpenPasswordFilter`.
+  
+  3. Copy OPFService.exe and OPFService.exe.config to a destination you like, like C:\Program Files\OpenPasswordFilter
+  
+  4. Copy your lists to whatever destination you want, sysvol is not the worst place to do this to have all domain controllers in sync. 
+   - `opfmatch.txt`
+   - `opfcont.txt`
+   - `opfregex.txt`
+   - `opfgroups.txt`
+     **Note** The service checks file modification time at the start of servicing a request and will read in the lists again if it has changed, so restarting the OPF service when modifying the lists is not necessary.
+     **Note** Working with large password files will lead in a huge memory overload (huge is very huge)
 
-Next, you will want to configure the OPF service.  You can do so as follows:
+   5. Edit OPFService.exe.config and set the "OPFSysVolPath" to the destination where you placed your lists with a trailing \
 
+   6. Install the OPF Service 
     > sc create OPF binPath= <full path to exe>\opfservice.exe start= boot
 
-You can then start or stop the OPF service from the command line (as an administrator) with:
-    
-    > NET START OPF
-
-or
-
-    > NET STOP OPF
-
-Finally, create several dictionary files in the the SYSVOL path '\\127.0.0.1\sysvol\testdomain.com\OPF\', obviously substituting
-your domain name. These are in SYSVOL so that they stay in sync across all domain controllers, and the service checks file
-modification time at the start of servicing a request and will read in the lists again if it has changed, so restarting the OPF
-service when modifying the lists is not necessary.
-
-These are
-- `opfmatch.txt`
-- `opfcont.txt`
-- `opfregex.txt`
-- `opfgroups.txt`
-
-Or you can skip all this and use the installer. 
-
-   https://github.com/brockrob/OpenPasswordFilter/raw/master/OPFInstaller_x64.zip
+   7. If everything is in its place, try to start the service    
+    > sc start OPF
+    or
+    > sc stop OPF
+    **Note** Working with a very large password file will lead to an extended starttime so there might be a message about "not responding"
 
 ### opfmatch.txt and opfcont.txt
 These should contain one forbidden password per line, such as:
@@ -111,13 +106,7 @@ If the service fails to start, it's likely an error ingesting the wordlists, and
 written to the Application event log.
 
 ## Production Installation Details
-This requires a 64 bit OS as the password filter bitness must match that of the OS and I see no reason to target x86. If you 
-build it yourself against x86, it will probably work. I cannot set the reboot flag in the MSI with Visual Studio, so you'll
-have to manually do that, but it still saves some significant legwork.
-
-The installer includes lists. The match list is rockyou.txt with every line less than ten characters stripped out, lowered,
-sorted, and de-duped. The 'contains' list was made as described above with hashcat rules from a seed set containing some dumb words I've seen people base passwords on as well as some terms relevant to my environment (company names, industry terms, etc).
-The group and regex lists are empty.
+This requires a 64 bit OS as the password filter bitness must match that of the OS and I see no reason to target x86. 
 
 If all has gone well, reboot your DC and test by using the normal GUI password reset function to choose a password that is on
 your forbidden list.
