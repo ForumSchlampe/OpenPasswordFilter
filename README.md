@@ -46,6 +46,7 @@ You can download a precompiled 64-bit version of OPF from the following link:
   1. Copy `OpenPasswordFilter.dll` to `%WINDIR%\System32`
   
   2. Configure the `HKLM\SYSTEM\CurrentControlSet\Control\Lsa\Notification Packages` registry key with the DLL name
+  
   **Note** do not include the `.dll` extension in the registry key -- just `OpenPasswordFilter`.
   
   3. Copy OPFService.exe and OPFService.exe.config to a destination you like, like C:\Program Files\OpenPasswordFilter
@@ -55,10 +56,16 @@ You can download a precompiled 64-bit version of OPF from the following link:
    - `opfcont.txt`
    - `opfregex.txt`
    - `opfgroups.txt`
+   
      **Note** The service checks file modification time at the start of servicing a request and will read in the lists again if it has changed, so restarting the OPF service when modifying the lists is not necessary.
+     
      **Note** Working with large password files will lead in a huge memory overload (huge is very huge)
 
-   5. Edit OPFService.exe.config and set the "OPFSysVolPath" to the destination where you placed your lists with a trailing \
+   5. Edit OPFService.exe.config and set at least the path for
+      "OPFMatchPath" 
+      "OPFContPath" 
+      "OPFRegexhPath" 
+      "OPFGroupsPath" 
 
    6. Install the OPF Service 
     > sc create OPF binPath= <full path to exe>\opfservice.exe start= boot
