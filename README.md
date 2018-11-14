@@ -49,7 +49,7 @@ You can download a precompiled 64-bit version of OPF from the following link:
   
   3. Copy OPFService.exe and OPFService.exe.config to a destination you like, like C:\Program Files\OpenPasswordFilter
   
-  4. Copy your lists to whatever destination you want, sysvol is not the worst place to do this to have all domain controllers in sync. 
+  4. Copy your lists to whatever destination you want, sysvol is not the worst place to do this to have all domain controllers in sync.  
      "opfmatch.txt"  
      "opfcont.txt"  
      "opfregex.txt"  
@@ -64,12 +64,12 @@ You can download a precompiled 64-bit version of OPF from the following link:
       "OPFGroupsPath"  
 
    6. Install the OPF Service  
-    --> sc create OPF binPath= <full path to exe>\opfservice.exe start= boot 
+    -> sc create OPF binPath= <full path to exe>\opfservice.exe start= boot 
 
    7. If everything is in its place, try to start the service  
-    --> sc start OPF  
+    -> sc start OPF  
     or  
-    --> sc stop OPF   
+    -> sc stop OPF   
     **Note** Working with a very large password file will lead to an extended starttime so there might be a message about "not responding"  
 
 ### opfmatch.txt and opfcont.txt
