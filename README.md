@@ -42,42 +42,32 @@ You can download a precompiled 64-bit version of OPF from the following link:
 [OPFService.exe](https://github.com/ForumSchlampe/OpenPasswordFilter/tree/master/OPFService/bin/x64/Release)
 [OpenPasswordFilter.dll](-missing-)
 
-You will want to configure the DLL so that Windows will load it for filtering passwords.  Note that you will have to do this
-on all domain controllers, as any of them may end up servicing a password change request.  Here is a link to Microsoft's
-documentation for setting up a password filter:
-
-    https://msdn.microsoft.com/en-us/library/windows/desktop/ms721766(v=vs.85).aspx
-    
-The bottom line is this:
-
+   
   1. Copy `OpenPasswordFilter.dll` to `%WINDIR%\System32`
-  2. Configure the `HKLM\SYSTEM\CurrentControlSet\Control\Lsa\Notification Packages` registry key with the DLL name
   
-Note, do not include the `.dll` extension in the registry key -- just `OpenPasswordFilter`.
+  2. Configure the `HKLM\SYSTEM\CurrentControlSet\Control\Lsa\Notification Packages` registry key with the DLL name
+  **Note** do not include the `.dll` extension in the registry key -- just `OpenPasswordFilter`.
+  
+  3. Copy OPFService.exe and OPFService.exe.config to a destination you like, like C:\Program Files\OpenPasswordFilter
+  
+  4. Copy your lists to whatever destination you want, sysvol is not the worst place to do this to have all domain controllers in sync. 
+   - `opfmatch.txt`
+   - `opfcont.txt`
+   - `opfregex.txt`
+   - `opfgroups.txt`
+     **Note** The service checks file modification time at the start of servicing a request and will read in the lists again if it has changed, so restarting the OPF service when modifying the lists is not necessary.
+     **Note** Working with large password files will lead in a huge memory overload (huge is very huge)
 
-Copy OPFService.exe and OPFService.exe.config to a destination you like, like C:\Program Files\OpenPasswordFilter
+   5. Edit OPFService.exe.config and set the "OPFSysVolPath" to the destination where you placed your lists with a trailing \
 
-Copy your lists to whatever destination you want, sysvol is not the worst place to do this to have all domain controllers in sync. 
-- `opfmatch.txt`
-- `opfcont.txt`
-- `opfregex.txt`
-- `opfgroups.txt`
-The service checks file modification time at the start of servicing a request and will read in the lists again if it has changed, so restarting the OPF service when modifying the lists is not necessary.
-
-Edit OPFService.exe.config and set the "OPFSysVolPath" to the destination where you placed your lists with a trailing \
-
-Next, you will want to configure the OPF service.  You can do so as follows:
-
+   6. Install the OPF Service 
     > sc create OPF binPath= <full path to exe>\opfservice.exe start= boot
 
-You can then start or stop the OPF service from the command line (as an administrator) with:
-    
+   7. If everything is in its place, try to start the service    
     > sc start OPF
-
-or
-
+    or
     > sc stop OPF
-
+    **Note** Working with a very large password file will lead to an extended starttime so there might be a message about "not responding"
 
 ### opfmatch.txt and opfcont.txt
 These should contain one forbidden password per line, such as:
