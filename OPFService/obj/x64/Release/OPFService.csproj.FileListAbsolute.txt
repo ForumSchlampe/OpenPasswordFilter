@@ -37,3 +37,13 @@ C:\_GIT\OpenPasswordFilter\OPFService\bin\x64\Release\OPFService.exe.config
 C:\_GIT\OpenPasswordFilter\OPFService\bin\x64\Release\OPFService.exe
 C:\_GIT\OpenPasswordFilter\OPFService\bin\x64\Release\OPFService.pdb
 C:\_GIT\OpenPasswordFilter\OPFService\obj\x64\Release\OPFService.csprojResolveAssemblyReference.cache
+C:\Users\Test\GIT\OpenPasswordFilter\OPFService\obj\x64\Release\OPFService.OPFService.resources
+C:\Users\Test\GIT\OpenPasswordFilter\OPFService\obj\x64\Release\OPFService.ProjectInstaller.resources
+C:\Users\Test\GIT\OpenPasswordFilter\OPFService\obj\x64\Release\OPFService.csproj.GenerateResource.Cache
+C:\Users\Test\GIT\OpenPasswordFilter\OPFService\obj\x64\Release\OPFService.csproj.CoreCompileInputs.cache
+C:\Users\Test\GIT\OpenPasswordFilter\OPFService\obj\x64\Release\OPFService.exe
+C:\Users\Test\GIT\OpenPasswordFilter\OPFService\obj\x64\Release\OPFService.pdb
+C:\Users\Test\GIT\OpenPasswordFilter\OPFService\bin\x64\Release\OPFService.exe.config
+C:\Users\Test\GIT\OpenPasswordFilter\OPFService\bin\x64\Release\OPFService.exe
+C:\Users\Test\GIT\OpenPasswordFilter\OPFService\bin\x64\Release\OPFService.pdb
+C:\Users\Test\GIT\OpenPasswordFilter\OPFService\obj\x64\Release\OPFService.csprojResolveAssemblyReference.cache
