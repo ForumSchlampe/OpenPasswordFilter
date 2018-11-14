@@ -330,3 +330,4 @@ ASALocalRun/
 /OPFInstaller/Release
 /OpenPasswordFilter.VC.VC.opendb
 *.log
+.vs
