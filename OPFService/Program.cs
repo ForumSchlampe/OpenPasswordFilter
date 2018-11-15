@@ -40,8 +40,7 @@ namespace OPFService
                 eventLog.WriteEntry(message, level, 100, 1);
             }
         }
-
-
+        
         static void Main(string[] args)
         {
             ServiceBase.Run(new OPFService());
@@ -50,12 +49,15 @@ namespace OPFService
         protected override void OnStart(string[] args)
         {
             base.OnStart(args);
-            string OPFSysVolPath = Properties.Settings.Default.OPFSysVolPath; //"\\\\127.0.0.1\\SysVol\\" + System.Net.NetworkInformation.IPGlobalProperties.GetIPGlobalProperties().DomainName + "\\OPF\\";
+            string OPFMatchPath = Properties.Settings.Default.OPFMatchPath; //Filterlist for exact matches
+            string OPFContPath = Properties.Settings.Default.OPFContPath; //Filterlist for partial matches
+            string OPFRegexPath = Properties.Settings.Default.OPFRegexPath; //Filterlist for regex matches
+            string OPFGRoupPath = Properties.Settings.Default.OPFRegexPath; //Filterlist for group filter
             OPFDictionary d = new OPFDictionary(
-                OPFSysVolPath + "opfmatch.txt",
-                OPFSysVolPath + "opfcont.txt",
-                OPFSysVolPath + "opfregex.txt");
-            OPFGroup g = new OPFGroup(OPFSysVolPath + "opfgroups.txt");  // restrict password filter to users in these groups.
+                OPFMatchPath,
+                OPFContPath,
+                OPFRegexPath);
+            OPFGroup g = new OPFGroup(OPFGRoupPath);  // restrict password filter to users in these groups.
             NetworkService svc = new NetworkService(d, g);
             worker = new Thread(() => svc.main(listener));
             worker.Start();
