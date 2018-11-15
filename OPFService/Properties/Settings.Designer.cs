@@ -23,63 +23,48 @@ namespace OPFService.Properties {
             }
         }
         
-        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("False")]
         public bool PwnedPasswordsAPIEnabled {
             get {
                 return ((bool)(this["PwnedPasswordsAPIEnabled"]));
             }
-            set {
-                this["PwnedPasswordsAPIEnabled"] = value;
-            }
         }
         
-        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        [global::System.Configuration.DefaultSettingValueAttribute("c:\\program files\\OpenPasswordFilter\\opfmatch.txt")]
         public string OPFMatchPath {
             get {
                 return ((string)(this["OPFMatchPath"]));
             }
-            set {
-                this["OPFMatchPath"] = value;
-            }
         }
         
-        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        [global::System.Configuration.DefaultSettingValueAttribute("c:\\program files\\OpenPasswordFilter\\opfcont.txt")]
         public string OPFContPath {
             get {
                 return ((string)(this["OPFContPath"]));
             }
-            set {
-                this["OPFContPath"] = value;
-            }
         }
         
-        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        [global::System.Configuration.DefaultSettingValueAttribute("c:\\program files\\OpenPasswordFilter\\opfregex.txt")]
         public string OPFRegexPath {
             get {
                 return ((string)(this["OPFRegexPath"]));
             }
-            set {
-                this["OPFRegexPath"] = value;
-            }
         }
         
-        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        [global::System.Configuration.DefaultSettingValueAttribute("c:\\program files\\OpenPasswordFilter\\opfgroup.txt")]
         public string OPFGRoupPath {
             get {
                 return ((string)(this["OPFGRoupPath"]));
-            }
-            set {
-                this["OPFGRoupPath"] = value;
             }
         }
     }
