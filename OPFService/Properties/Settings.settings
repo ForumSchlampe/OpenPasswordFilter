@@ -14,7 +14,7 @@
     <Setting Name="OPFRegexPath" Type="System.String" Scope="Application">
       <Value Profile="(Default)">c:\program files\OpenPasswordFilter\opfregex.txt</Value>
     </Setting>
-    <Setting Name="OPFGRoupPath" Type="System.String" Scope="Application">
+    <Setting Name="OPFGroupPath" Type="System.String" Scope="Application">
       <Value Profile="(Default)">c:\program files\OpenPasswordFilter\opfgroup.txt</Value>
     </Setting>
     <Setting Name="PwnedLocalMySQLDB" Type="System.Boolean" Scope="Application">
@@ -24,10 +24,10 @@
       <Value Profile="(Default)">False</Value>
     </Setting>
     <Setting Name="PwnedLocalMySQLDBConnString" Type="System.String" Scope="Application">
-      <Value Profile="(Default)" />
+      <Value Profile="(Default)">Server=myServerAddress;Database=myDataBase;IntegratedSecurity=yes;Uid=auth_windows;SslMode=Required;UseCompression=True;</Value>
     </Setting>
     <Setting Name="PwnedLocalMSSQLDBConnString" Type="System.String" Scope="Application">
-      <Value Profile="(Default)" />
+      <Value Profile="(Default)">Server=myServerAddress;Database=myDataBase;Integrated Security=SSPI;Encrypt=true</Value>
     </Setting>
   </Settings>
 </SettingsFile>

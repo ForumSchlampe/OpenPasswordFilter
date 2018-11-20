@@ -10,12 +10,12 @@ using OPFService.Properties;
 
 namespace OPFService
 {
-    class PwnedDBAPI
+    class PwnedLocalDB
     {
         MySqlConnection mysqlConn;
         SqlConnection mssqlConn;
 
-        public PwnedDBAPI()
+        public PwnedLocalDB()
         {
             if (Settings.Default.PwnedLocalMySQLDB)
             {
@@ -120,7 +120,7 @@ namespace OPFService
             return false;
         }
 
-        ~PwnedDBAPI()
+        ~PwnedLocalDB()
         {
             if (mysqlConn != null)
             {
