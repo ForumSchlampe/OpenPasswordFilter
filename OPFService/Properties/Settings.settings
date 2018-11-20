@@ -17,5 +17,17 @@
     <Setting Name="OPFGRoupPath" Type="System.String" Scope="Application">
       <Value Profile="(Default)">c:\program files\OpenPasswordFilter\opfgroup.txt</Value>
     </Setting>
+    <Setting Name="PwnedLocalMySQLDB" Type="System.Boolean" Scope="Application">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="PwnedLocalMSSQLDB" Type="System.Boolean" Scope="Application">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="PwnedLocalMySQLDBConnString" Type="System.String" Scope="Application">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="PwnedLocalMSSQLDBConnString" Type="System.String" Scope="Application">
+      <Value Profile="(Default)" />
+    </Setting>
   </Settings>
 </SettingsFile>

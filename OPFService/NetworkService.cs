@@ -32,6 +32,8 @@ namespace OPFService
         OPFDictionary dict;
         OPFGroup group;
         PwnedPasswordsAPI pwned = new PwnedPasswordsAPI();
+        PwnedDBAPI pwnedDB = new PwnedDBAPI();
+
         private void writeLog(string message, System.Diagnostics.EventLogEntryType level)
         {
             using (EventLog eventLog = new EventLog("Application"))
@@ -99,6 +101,11 @@ namespace OPFService
                         if (Properties.Settings.Default.PwnedPasswordsAPIEnabled && passwordIsBad == false)
                         {
                             passwordIsBad = pwned.checkHashPrefix(password);
+                        }
+
+                        if ((Properties.Settings.Default.PwnedLocalMySQLDB || Properties.Settings.Default.PwnedLocalMSSQLDB) && passwordIsBad == false)
+                        {
+                            passwordIsBad = pwnedDB.checkPassword(password);
                         }
                     }
                     ostream.WriteLine(passwordIsBad ? "false" : "true");
