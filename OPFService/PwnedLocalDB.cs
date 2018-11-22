@@ -56,7 +56,7 @@ namespace OPFService
         {
             if (Settings.Default.PwnedLocalMySQLDB)
             {
-                string SQL = "";//TODO MySQL-Statement
+                string SQL = "SELECT * FROM" + "Passwordlist" + "WHERE Passwords='" + Password +"'";//TODO MySQL-Statement, erst mal ohne Hash
                 try
                 {
                     MySqlCommand cmd = new MySqlCommand(SQL, mysqlConn);
@@ -87,7 +87,7 @@ namespace OPFService
 
             if (Settings.Default.PwnedLocalMSSQLDB)
             {
-                string SQL = "";//TODO MSSQL-Statement
+                string SQL = "SELECT * FROM" + "Passwordlist" + "WHERE Passwords='" + Password +"'";//TODO MSSQL-Statement, erst mal ohne Hash
                 try
                 {
                     SqlCommand cmd = new SqlCommand(SQL, mssqlConn);
