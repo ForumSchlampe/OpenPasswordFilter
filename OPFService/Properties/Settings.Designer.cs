@@ -12,7 +12,7 @@ namespace OPFService.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "14.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "15.5.0.0")]
     internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
         
         private static Settings defaultInstance = ((Settings)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new Settings())));
@@ -62,9 +62,9 @@ namespace OPFService.Properties {
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("c:\\program files\\OpenPasswordFilter\\opfgroup.txt")]
-        public string OPFGRoupPath {
+        public string OPFGroupPath {
             get {
-                return ((string)(this["OPFGRoupPath"]));
+                return ((string)(this["OPFGroupPath"]));
             }
         }
         
@@ -88,7 +88,8 @@ namespace OPFService.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        [global::System.Configuration.DefaultSettingValueAttribute("Server=myServerAddress;Database=myDataBase;IntegratedSecurity=yes;Uid=auth_window" +
+            "s;SslMode=Required;UseCompression=True;\r")]
         public string PwnedLocalMySQLDBConnString {
             get {
                 return ((string)(this["PwnedLocalMySQLDBConnString"]));
@@ -97,7 +98,7 @@ namespace OPFService.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        [global::System.Configuration.DefaultSettingValueAttribute("Server=myServerAddress;Database=myDataBase;Integrated Security=SSPI;Encrypt=true")]
         public string PwnedLocalMSSQLDBConnString {
             get {
                 return ((string)(this["PwnedLocalMSSQLDBConnString"]));

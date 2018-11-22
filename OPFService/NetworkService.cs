@@ -32,7 +32,7 @@ namespace OPFService
         OPFDictionary dict;
         OPFGroup group;
         PwnedPasswordsAPI pwned = new PwnedPasswordsAPI();
-        PwnedDBAPI pwnedDB = new PwnedDBAPI();
+        PwnedLocalDB pwnedDB = new PwnedLocalDB();
 
         private void writeLog(string message, System.Diagnostics.EventLogEntryType level)
         {

@@ -139,7 +139,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
-    <Compile Include="PwnedDBAPI.cs" />
+    <Compile Include="PwnedLocalDB.cs" />
     <Compile Include="PwnedPasswordsAPI.cs" />
     <Compile Include="NetworkService.cs" />
     <Compile Include="OPFDictionary.cs" />

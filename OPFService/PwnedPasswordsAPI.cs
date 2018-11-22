@@ -28,7 +28,7 @@ namespace OPFService
         {
             using (EventLog eventLog = new EventLog("Application"))
             {
-                eventLog.Source = "Application";
+                eventLog.Source = "OpenPasswordFilter";
                 eventLog.WriteEntry(message, level, 101, 1);
             }
         }

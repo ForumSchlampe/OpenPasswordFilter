@@ -52,12 +52,12 @@ namespace OPFService
             string OPFMatchPath = Properties.Settings.Default.OPFMatchPath; //Filterlist for exact matches
             string OPFContPath = Properties.Settings.Default.OPFContPath; //Filterlist for partial matches
             string OPFRegexPath = Properties.Settings.Default.OPFRegexPath; //Filterlist for regex matches
-            string OPFGRoupPath = Properties.Settings.Default.OPFRegexPath; //Filterlist for group filter
+            string OPFGroupPath = Properties.Settings.Default.OPFRegexPath; //Filterlist for group filter
             OPFDictionary d = new OPFDictionary(
                 OPFMatchPath,
                 OPFContPath,
                 OPFRegexPath);
-            OPFGroup g = new OPFGroup(OPFGRoupPath);  // restrict password filter to users in these groups.
+            OPFGroup g = new OPFGroup(OPFGroupPath);  // restrict password filter to users in these groups.
             NetworkService svc = new NetworkService(d, g);
             worker = new Thread(() => svc.main(listener));
             worker.Start();
