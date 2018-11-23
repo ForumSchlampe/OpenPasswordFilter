@@ -17,12 +17,23 @@ namespace OPFService
 
         public PwnedLocalDB()
         {
+            openDBConnections();
+        }
+
+        private void openDBConnections()
+        {
             if (Settings.Default.PwnedLocalMySQLDB)
             {
-                mysqlConn = new MySqlConnection(Settings.Default.PwnedLocalMySQLDBConnString);
+                if (mysqlConn == null)
+                {
+                    mysqlConn = new MySqlConnection(Settings.Default.PwnedLocalMySQLDBConnString);
+                }
                 try
                 {
-                    mysqlConn.Open();
+                    if (mysqlConn.State != System.Data.ConnectionState.Open)
+                    {
+                        mysqlConn.Open();
+                    }
                 }
                 catch (MySqlException mex)
                 {
@@ -36,10 +47,16 @@ namespace OPFService
 
             if (Settings.Default.PwnedLocalMSSQLDB)
             {
-                mssqlConn = new SqlConnection(Settings.Default.PwnedLocalMSSQLDBConnString);
+                if (mssqlConn == null)
+                {
+                    mssqlConn = new SqlConnection(Settings.Default.PwnedLocalMSSQLDBConnString);
+                }
                 try
                 {
-                    mssqlConn.Open();
+                    if (mssqlConn.State != System.Data.ConnectionState.Open)
+                    {
+                        mssqlConn.Open();
+                    }
                 }
                 catch (SqlException sex)
                 {
@@ -54,6 +71,7 @@ namespace OPFService
 
         public bool checkPassword(string Password)
         {
+            openDBConnections();
             if (Settings.Default.PwnedLocalMySQLDB)
             {
                 string SQL = "SELECT * FROM Passwordlist WHERE Passwords='" + Password + "'";//TODO MySQL-Statement, erst mal ohne Hash
