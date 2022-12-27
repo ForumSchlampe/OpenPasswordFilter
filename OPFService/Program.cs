@@ -16,78 +16,65 @@
 //
 
 using System;
-using System.Collections.Generic;
-using System.Threading;
-using System.ServiceProcess;
-using System.IO;
-using System.Net.Sockets;
+using Topshelf;
+using OPFService.Core;
+using Serilog;
 using System.Diagnostics;
+using System.Net.Http;
 
 namespace OPFService
 {
-    class OPFService : ServiceBase
+    static class Program
     {
-        Thread worker;
-        Socket listener = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-        public OPFService()
+        private static HttpClient _httpClient;
+        public static HttpClient OpenPasswordFilterClient
         {
-        }
-        private void writeLog(string message, System.Diagnostics.EventLogEntryType level)
-        {
-            using (EventLog eventLog = new EventLog("Application"))
+            get
             {
-                eventLog.Source = "OpenPasswordFilter";
-                eventLog.WriteEntry(message, level, 100, 1);
+                if (_httpClient == null)
+                {
+                    _httpClient = new HttpClient();
+                }
+
+                return _httpClient;
             }
         }
-        
+
         static void Main(string[] args)
         {
-            ServiceBase.Run(new OPFService());
-        }
+            if(!EventLog.SourceExists("OpenPasswordFilter"))
+            {
+                EventLog.CreateEventSource("OpenPasswordFilter", "OpenPasswordFilter");
+            }
 
-        protected override void OnStart(string[] args)
-        {
-            base.OnStart(args);
-            string OPFMatchPath = Properties.Settings.Default.OPFMatchPath; //Filterlist for exact matches
-            string OPFContPath = Properties.Settings.Default.OPFContPath; //Filterlist for partial matches
-            string OPFRegexPath = Properties.Settings.Default.OPFRegexPath; //Filterlist for regex matches
-            string OPFGroupPath = Properties.Settings.Default.OPFRegexPath; //Filterlist for group filter
-            OPFDictionary d = new OPFDictionary(
-                OPFMatchPath,
-                OPFContPath,
-                OPFRegexPath);
-            OPFGroup g = new OPFGroup(OPFGroupPath);  // restrict password filter to users in these groups.
-            NetworkService svc = new NetworkService(d, g);
-            worker = new Thread(() => svc.main(listener));
-            worker.Start();
-        }
+            var exitCode = HostFactory.Run(x =>
+            {
+                x.RunAsLocalSystem();
 
-        protected override void OnShutdown()
-        {
-            writeLog("OpenPasswordFilter goin down", EventLogEntryType.Information);
-            base.OnShutdown();
-            //listener.Shutdown(SocketShutdown.Both);
-            worker.Abort();
-        }
-        //listener.accept blocks in the worker thread, so service restart doesn't kill the process in a timely manner
-        //this causes the new instance to be unable to bind to the local port
-        //move socket construction out here so we can override OnStop to forcibly close the socket
-        protected override void OnStop()
-        {
-            base.OnStop();
-            writeLog("Stopping OpenPasswordFilter Service...", EventLogEntryType.Information);
-            listener.Close();
-            worker.Abort();
-        }
+                var loggerConfig = new LoggerConfiguration()
+                    .MinimumLevel.Debug()
+                    .WriteTo.Console()
+                    .WriteTo.EventLog("OpenPasswordFilter")
+                    .CreateLogger();
+                x.UseSerilog(loggerConfig);
 
-        private void InitializeComponent()
-        {
-            // 
-            // OPFService
-            // 
-            this.ServiceName = "OPF";
+                x.Service<OpenPasswordFilterService>(s =>
+                {
+                    s.ConstructUsing(opf => new OpenPasswordFilterService());
+                    s.WhenStarted(opf => opf.Start());
+                    s.WhenStopped(opf => opf.Stop());
+                });
 
+                x.SetServiceName("OpenPasswordFilter");
+                x.SetDisplayName("Open Password Filter");
+                x.SetDescription("Custom service to better protect and control Active Directory domain passwords.");
+            });
+
+            Log.CloseAndFlush();
+            OpenPasswordFilterClient.Dispose();
+
+            var exitCodeValue = (int)Convert.ChangeType(exitCode, exitCode.GetTypeCode());
+            Environment.ExitCode = exitCodeValue;
         }
     }
 }
