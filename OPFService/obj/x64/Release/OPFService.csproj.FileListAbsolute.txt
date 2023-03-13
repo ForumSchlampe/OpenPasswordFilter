@@ -46,3 +46,14 @@ C:\_GIT\OpenPasswordFilter\OPFService\obj\x64\Release\OPFService.ProjectInstalle
 C:\_GIT\OpenPasswordFilter\OPFService\obj\x64\Release\OPFService.csproj.GenerateResource.Cache
 C:\_GIT\OpenPasswordFilter\OPFService\obj\x64\Release\OPFService.exe
 C:\_GIT\OpenPasswordFilter\OPFService\obj\x64\Release\OPFService.pdb
+C:\Work\SDK_Relevant\OpenPasswordFilter\OPFService\bin\x64\Release\OPFService.exe.config
+C:\Work\SDK_Relevant\OpenPasswordFilter\OPFService\bin\x64\Release\OPFService.exe
+C:\Work\SDK_Relevant\OpenPasswordFilter\OPFService\bin\x64\Release\OPFService.pdb
+C:\Work\SDK_Relevant\OpenPasswordFilter\OPFService\obj\x64\Release\OPFService.csproj.AssemblyReference.cache
+C:\Work\SDK_Relevant\OpenPasswordFilter\OPFService\obj\x64\Release\OPFService.Program.resources
+C:\Work\SDK_Relevant\OpenPasswordFilter\OPFService\obj\x64\Release\OPFService.ProjectInstaller.resources
+C:\Work\SDK_Relevant\OpenPasswordFilter\OPFService\obj\x64\Release\OPFService.csproj.GenerateResource.cache
+C:\Work\SDK_Relevant\OpenPasswordFilter\OPFService\obj\x64\Release\OPFService.csproj.CoreCompileInputs.cache
+C:\Work\SDK_Relevant\OpenPasswordFilter\OPFService\obj\x64\Release\OPFService.csproj.CopyComplete
+C:\Work\SDK_Relevant\OpenPasswordFilter\OPFService\obj\x64\Release\OPFService.exe
+C:\Work\SDK_Relevant\OpenPasswordFilter\OPFService\obj\x64\Release\OPFService.pdb
