@@ -70,7 +70,7 @@ namespace OPFService.Core
                             }
                         }
 
-                        if(!contains)
+                        if (!contains)
                         {
                             _logger.Info($"User is not in a group to check. Username = {username}");
                         }

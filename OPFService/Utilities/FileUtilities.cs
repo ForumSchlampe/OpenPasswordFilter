@@ -16,12 +16,12 @@ namespace OPFService.Utilities
 
             var isFileModified = false;
 
-            if(!string.IsNullOrEmpty(filePath))
+            if (!string.IsNullOrEmpty(filePath))
             {
                 var fileInfo = new FileInfo(filePath);
-                if(fileInfo.Exists)
+                if (fileInfo.Exists)
                 {
-                    isFileModified = currentLastModTime.ToUniversalTime() == fileInfo.LastWriteTimeUtc;
+                    isFileModified = currentLastModTime.ToUniversalTime() != fileInfo.LastWriteTimeUtc;
 
                     _logger.Info($"[{methodName}] - File is modified = {isFileModified}. " +
                         $"File full name = {fileInfo.FullName}");
@@ -41,14 +41,14 @@ namespace OPFService.Utilities
 
             var fileData = new HashSet<string>();
 
-            if(!string.IsNullOrEmpty(filePath))
+            if (!string.IsNullOrEmpty(filePath))
             {
                 var fileInfo = new FileInfo(filePath);
                 if (fileInfo.Exists)
                 {
-                    using(var streamReader = new StreamReader(fileInfo.FullName))
+                    using (var streamReader = new StreamReader(fileInfo.FullName))
                     {
-                        while(!streamReader.EndOfStream)
+                        while (!streamReader.EndOfStream)
                         {
                             fileData.Add(streamReader.ReadLine());
                         }

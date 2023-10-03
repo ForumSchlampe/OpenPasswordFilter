@@ -15,12 +15,12 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111 - 1307  USA
 //
 
-using System;
-using Topshelf;
 using OPFService.Core;
 using Serilog;
+using System;
 using System.Diagnostics;
 using System.Net.Http;
+using Topshelf;
 
 namespace OPFService
 {
@@ -42,7 +42,7 @@ namespace OPFService
 
         static void Main(string[] args)
         {
-            if(!EventLog.SourceExists("OpenPasswordFilter"))
+            if (!EventLog.SourceExists("OpenPasswordFilter"))
             {
                 EventLog.CreateEventSource("OpenPasswordFilter", "OpenPasswordFilter");
             }

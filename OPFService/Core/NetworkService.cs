@@ -16,7 +16,6 @@
 //
 
 using OPFService.Core.DatabaseAPI;
-using OPFService.Utilities;
 using System;
 using System.IO;
 using System.Net;
@@ -57,6 +56,7 @@ namespace OPFService.Core
                 while (true)
                 {
                     Socket client = listener.Accept();
+                    Handle(client);
                     new Thread(() => Handle(client)).Start();
                 }
             }
@@ -73,10 +73,10 @@ namespace OPFService.Core
 
             try
             {
-                using(var netStream = new NetworkStream(client))
+                using (var netStream = new NetworkStream(client))
                 {
-                    using(var streamReader = new StreamReader(netStream))
-                    using(var streamWriter = new StreamWriter(netStream))
+                    using (var streamReader = new StreamReader(netStream))
+                    using (var streamWriter = new StreamWriter(netStream))
                     {
                         bool isPasswordBad = false;
 

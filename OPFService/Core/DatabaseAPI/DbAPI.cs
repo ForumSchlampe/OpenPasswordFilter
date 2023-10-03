@@ -1,5 +1,4 @@
-﻿using OPFService.Utilities;
-using System;
+﻿using System;
 using System.Data.Common;
 using Topshelf.Logging;
 
@@ -14,7 +13,7 @@ namespace OPFService.Core.DatabaseAPI
 
         private readonly string _connectionString;
 
-        public DbAPI(string providerName, string connectionString) 
+        public DbAPI(string providerName, string connectionString)
         {
             _dbProviderFactory = DbProviderFactories.GetFactory(providerName);
             _connectionString = connectionString;
@@ -67,7 +66,7 @@ namespace OPFService.Core.DatabaseAPI
 
                 return dbConnection;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 _logger.Error($"[{methodName}] - Error = {ex.Message}");
 

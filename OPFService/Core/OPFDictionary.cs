@@ -145,7 +145,7 @@ namespace OPFService.Core
             return doesPasswordMatchForbiddenPattern;
         }
 
-        private bool DoesPasswordHaveUserInfo(string username, string password) 
+        private bool DoesPasswordHaveUserInfo(string username, string password)
         {
             var methodName = $"{nameof(OPFDictionary)}::{nameof(DoesPasswordHaveUserInfo)}";
 

@@ -18,7 +18,7 @@ namespace OPFService.Utilities
                 var hex = b.ToString("x2");
                 passwordHash.Append(hex);
             }
-            
+
             return passwordHash.ToString();
         }
     }

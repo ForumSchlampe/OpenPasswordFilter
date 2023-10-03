@@ -6,16 +6,16 @@
       <Value Profile="(Default)">False</Value>
     </Setting>
     <Setting Name="OPFMatchPath" Type="System.String" Scope="Application">
-      <Value Profile="(Default)">c:\program files\OpenPasswordFilter\opfmatch.txt</Value>
+      <Value Profile="(Default)">D:\Dev\OpenPasswordFilter\Lists\opfmatch.txt</Value>
     </Setting>
     <Setting Name="OPFContPath" Type="System.String" Scope="Application">
-      <Value Profile="(Default)">c:\program files\OpenPasswordFilter\opfcont.txt</Value>
+      <Value Profile="(Default)">D:\Dev\OpenPasswordFilter\Lists\opfcont.txt</Value>
     </Setting>
     <Setting Name="OPFRegexPath" Type="System.String" Scope="Application">
-      <Value Profile="(Default)">c:\program files\OpenPasswordFilter\opfregex.txt</Value>
+      <Value Profile="(Default)">D:\Dev\OpenPasswordFilter\Lists\opfregex.txt</Value>
     </Setting>
     <Setting Name="OPFGroupPath" Type="System.String" Scope="Application">
-      <Value Profile="(Default)">c:\program files\OpenPasswordFilter\opfgroup.txt</Value>
+      <Value Profile="(Default)">D:\Dev\OpenPasswordFilter\Lists\opfgroup.txt</Value>
     </Setting>
     <Setting Name="PwnedLocalMySQLDB" Type="System.Boolean" Scope="Application">
       <Value Profile="(Default)">True</Value>
@@ -23,11 +23,12 @@
     <Setting Name="PwnedLocalMSSQLDB" Type="System.Boolean" Scope="Application">
       <Value Profile="(Default)">False</Value>
     </Setting>
-    <Setting Name="PwnedLocalMySQLDBConnString" Type="System.String" Scope="Application">
-      <Value Profile="(Default)">Server=myServerAddress;Database=myDataBase;IntegratedSecurity=yes;Uid=auth_windows;SslMode=Required;UseCompression=True;</Value>
-    </Setting>
     <Setting Name="PwnedLocalMSSQLDBConnString" Type="System.String" Scope="Application">
       <Value Profile="(Default)">Server=myServerAddress;Database=myDataBase;Integrated Security=SSPI;Encrypt=true</Value>
+    </Setting>
+    <Setting Name="PwnedLocalMySQLDBConnString" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">Server=myServerAddress;Database=myDataBase;IntegratedSecurity=yes;Uid=auth_windows;SslMode=Required;UseCompression=True;
+</Value>
     </Setting>
   </Settings>
 </SettingsFile>
