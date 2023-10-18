@@ -15,126 +15,153 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111 - 1307  USA
 //
 
-using OPFService.Core.DatabaseAPI;
 using System;
-using System.IO;
+using System.Collections.Concurrent;
+using System.Linq;
 using System.Net;
-using System.Net.Sockets;
-using System.Threading;
+using System.Net.NetworkInformation;
+using TcpSharp;
+using TcpSharp.Events;
 using Topshelf.Logging;
 
-namespace OPFService.Core
+namespace OPFService.Core;
+
+public sealed class NetworkService
 {
-    public class NetworkService
+    public class ClientDataReceivedEventArgs : EventArgs
     {
-        private const string MSSQL_PROVIDER = "System.Data.SqlClient";
-        private const string MYSQL_PROVIDER = "MySql.Data.MySqlClient";
-        private const string TEST_COMMAND = "test";
-        private const string HOST = "127.0.0.1";
-        private const int PORT = 5999;
-
-        private readonly LogWriter _logger = HostLogger.Get<NetworkService>();
-        private readonly OPFDictionary _oPFDictionary;
-        private readonly OPFGroup _oPFGroup;
-
-        public NetworkService(OPFDictionary oPFDictionary, OPFGroup oPFGroup)
+        public ClientDataReceivedEventArgs(string connectionId, string ipAddress, byte[] data)
         {
-            _oPFDictionary = oPFDictionary;
-            _oPFGroup = oPFGroup;
+            this.ConnectionId = connectionId;
+            this.IpAddress = ipAddress;
+            this.Data = data;
         }
 
-        public void main(Socket listener)
+        public string ConnectionId { get; }
+        public string IpAddress { get; set; }
+        public byte[] Data { get; }
+    }
+
+    public event EventHandler<ClientDataReceivedEventArgs> ClientDataReceived;
+
+    private readonly LogWriter logger = HostLogger.Get<NetworkService>();
+    private readonly TcpSharpSocketServer tcpsharpServer = new();
+    private readonly ConcurrentDictionary<string, byte[]> clientDataObserver = new();
+
+    public NetworkService()
+    {
+        this.tcpsharpServer.OnStarted += OnStarted;
+        this.tcpsharpServer.OnStopped += OnStopped;
+        this.tcpsharpServer.OnError += OnError;
+        this.tcpsharpServer.OnConnected += OnConnected;
+        this.tcpsharpServer.OnDisconnected += OnDisconnected;
+        this.tcpsharpServer.OnDataReceived += OnDataReceived;
+    }
+
+    public void StartServer(int port)
+    {
+        var methodName = $"{nameof(NetworkService)}::{nameof(StartServer)}";
+        this.logger.Debug($"[{methodName}] - Start server on port:{port}...");
+
+        if (!IPGlobalProperties.GetIPGlobalProperties().GetActiveTcpListeners().Any(endPoint => endPoint.Port == port))
         {
-            IPAddress ip = IPAddress.Parse(HOST);
-            IPEndPoint local = new IPEndPoint(ip, PORT);
+            this.tcpsharpServer.Port = port;
 
             try
             {
-                listener.Bind(local);
-                listener.Listen(64);
-                _logger.Info("OpenPasswordFilter is now running.");
-                while (true)
-                {
-                    Socket client = listener.Accept();
-                    Handle(client);
-                    new Thread(() => Handle(client)).Start();
-                }
-            }
-            catch (Exception e)
-            {
-                _logger.Error(e.Message);
-                _logger.Error("Unable to bind local port");
-            }
-        }
-
-        public void Handle(Socket client)
-        {
-            var methodName = $"{nameof(NetworkService)}::{nameof(Handle)}";
-
-            try
-            {
-                using (var netStream = new NetworkStream(client))
-                {
-                    using (var streamReader = new StreamReader(netStream))
-                    using (var streamWriter = new StreamWriter(netStream))
-                    {
-                        bool isPasswordBad = false;
-
-                        string command = streamReader.ReadLine();
-                        if (command == TEST_COMMAND)
-                        {
-                            string username = streamReader.ReadLine();
-                            string password = streamReader.ReadLine();
-
-                            _logger.Info($"[{methodName}] - Checking password for user with username = {username}");
-
-                            if (_oPFGroup.Contains(username))
-                            {
-                                isPasswordBad = _oPFDictionary.Contains(password, username);
-
-                                if (Properties.Settings.Default.PwnedPasswordsAPIEnabled && !isPasswordBad)
-                                {
-                                    var pwnedAPI = new PwnedAPI();
-                                    isPasswordBad = pwnedAPI.CheckPassword(password);
-                                }
-
-                                if (Properties.Settings.Default.PwnedLocalMySQLDB && !isPasswordBad)
-                                {
-                                    var dbAPI = new DbAPI(MSSQL_PROVIDER, Properties.Settings.Default.PwnedLocalMSSQLDBConnString);
-                                    isPasswordBad = dbAPI.CheckPassword(password);
-                                }
-                                else if (Properties.Settings.Default.PwnedLocalMySQLDB && !isPasswordBad)
-                                {
-                                    var dbAPI = new DbAPI(MYSQL_PROVIDER, Properties.Settings.Default.PwnedLocalMySQLDBConnString);
-                                    isPasswordBad = dbAPI.CheckPassword(password);
-                                }
-                            }
-
-                            _logger.Info($"[{methodName}] - Password checking finished successfully. " +
-                                $"Is password bad = {isPasswordBad}");
-
-                            streamWriter.WriteLine(isPasswordBad ? "false" : "true");
-                            streamWriter.Flush();
-                        }
-                        else
-                        {
-                            _logger.Info($"[{methodName}] - Given command is unknown. Command = {command}");
-
-                            streamWriter.WriteLine("ERROR");
-                            streamWriter.Flush();
-                        }
-                    }
-                }
+                this.tcpsharpServer.StartListening();
             }
             catch (Exception ex)
             {
-                _logger.Error($"[{methodName}] - Unexpected exception. Error = {ex.Message}");
-            }
-            finally
-            {
-                _logger.Info($"[{methodName}] - Closing current socket. {client.LocalEndPoint}");
-                client.Close();
+                this.logger.Error($"[{methodName}] - Unable to bind local port {this.tcpsharpServer.Port}", ex);
             }
         }
+        else
+        {
+            this.logger.Error($"[{methodName}] - Unable to start server. Port:{port} already in use");
+            return;
+        }
+    }
+
+    private void OnStarted(object sender, OnServerStartedEventArgs e)
+    {
+        var methodName = $"{nameof(NetworkService)}::{nameof(OnStarted)}";
+
+        if (e.IsStarted)
+        {
+            this.logger.Debug($"[{methodName}] - Server started with port {this.tcpsharpServer.Port}");
+        }
+    }
+
+    public void StopServer()
+    {
+        var methodName = $"{nameof(NetworkService)}::{nameof(StopServer)}";
+        this.logger.Debug($"[{methodName}] - Stop server...");
+
+        this.tcpsharpServer.StopListening();
+    }
+
+    public void SendString(string connectionId, string message)
+    {
+        var methodName = $"{nameof(NetworkService)}::{nameof(SendString)}";
+        this.logger.Debug($"[{methodName}] - SendString");
+
+        if (this.tcpsharpServer.GetClient(connectionId).Connected)
+        {
+            try
+            {
+                this.tcpsharpServer.SendString(connectionId, message);
+                this.tcpsharpServer.Disconnect(connectionId);
+            }
+            catch (Exception ex)
+            {
+                this.logger.Warn($"[{methodName}] - Client {connectionId} already disconnect", ex);
+            }
+        }
+    }
+
+    private void OnStopped(object sender, OnServerStoppedEventArgs e)
+    {
+        var methodName = $"{nameof(NetworkService)}::{nameof(StopServer)}";
+
+        if (e.IsStopped)
+        {
+            this.logger.Debug($"[{methodName}] - Server stopped");
+        }
+    }
+
+    private void OnDataReceived(object sender, OnServerDataReceivedEventArgs e)
+    {
+        var methodName = $"{nameof(NetworkService)}::{nameof(OnDataReceived)}";
+        this.logger.Debug($"[{methodName}] - Client {e.ConnectionId} data received. Length: {e.Data.Length}");
+
+        string ipAddress = ((IPEndPoint)(e.Client.Client.RemoteEndPoint)).Address.ToString();
+
+        //workaround, if client sending multiple or just one time the data
+        //if the first data length is 5, it means just the command 'test' is sent
+        //we need to store the data and invoke it after the payload 
+        if (e.Data.Length != 5 || !this.clientDataObserver.TryAdd(e.ConnectionId, e.Data))
+        {
+            this.ClientDataReceived?.Invoke(this,
+                new(e.ConnectionId, ipAddress, this.clientDataObserver.TryRemove(e.ConnectionId, out var odata) ? odata.Concat(e.Data).ToArray() : e.Data));
+        }
+    }
+
+    private void OnDisconnected(object sender, OnServerDisconnectedEventArgs e)
+    {
+        var methodName = $"{nameof(NetworkService)}::{nameof(OnDisconnected)}";
+        this.logger.Debug($"[{methodName}] - Client {e.ConnectionId} disconnected. Reason: {e.Reason}");
+    }
+
+    private void OnConnected(object sender, OnServerConnectedEventArgs e)
+    {
+        var methodName = $"{nameof(NetworkService)}::{nameof(OnConnected)}";
+        this.logger.Debug($"[{methodName}] - Client {e.ConnectionId} connected");
+    }
+
+    private void OnError(object sender, OnServerErrorEventArgs e)
+    {
+        var methodName = $"{nameof(NetworkService)}::{nameof(OnError)}";
+        this.logger.Debug($"[{methodName}] - Server throwns an exception", e.Exception);
     }
 }

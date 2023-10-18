@@ -18,63 +18,42 @@
 using OPFService.Core;
 using Serilog;
 using System;
-using System.Diagnostics;
-using System.Net.Http;
 using Topshelf;
 
-namespace OPFService
+namespace OPFService;
+
+static class Program
 {
-    static class Program
+    static void Main(string[] args)
     {
-        private static HttpClient _httpClient;
-        public static HttpClient OpenPasswordFilterClient
+        var exitCode = HostFactory.Run(x =>
         {
-            get
-            {
-                if (_httpClient == null)
+            x.RunAsLocalSystem();
+
+            var loggerConfig = new LoggerConfiguration()
+                .MinimumLevel.ControlledBy(new()
                 {
-                    _httpClient = new HttpClient();
-                }
+                    MinimumLevel = Properties.Settings.Default.LogLevel
+                })
+                .WriteTo.Console()
+                .WriteTo.EventLog("OpenPasswordFilter", manageEventSource: true)
+                .CreateLogger();
+            x.UseSerilog(loggerConfig);
 
-                return _httpClient;
-            }
-        }
-
-        static void Main(string[] args)
-        {
-            if (!EventLog.SourceExists("OpenPasswordFilter"))
+            x.Service<OpenPasswordFilterService>(s =>
             {
-                EventLog.CreateEventSource("OpenPasswordFilter", "OpenPasswordFilter");
-            }
-
-            var exitCode = HostFactory.Run(x =>
-            {
-                x.RunAsLocalSystem();
-
-                var loggerConfig = new LoggerConfiguration()
-                    .MinimumLevel.Debug()
-                    .WriteTo.Console()
-                    .WriteTo.EventLog("OpenPasswordFilter")
-                    .CreateLogger();
-                x.UseSerilog(loggerConfig);
-
-                x.Service<OpenPasswordFilterService>(s =>
-                {
-                    s.ConstructUsing(opf => new OpenPasswordFilterService());
-                    s.WhenStarted(opf => opf.Start());
-                    s.WhenStopped(opf => opf.Stop());
-                });
-
-                x.SetServiceName("OpenPasswordFilter");
-                x.SetDisplayName("Open Password Filter");
-                x.SetDescription("Custom service to better protect and control Active Directory domain passwords.");
+                s.ConstructUsing(opf => new OpenPasswordFilterService());
+                s.WhenStarted(opf => opf.Start());
+                s.WhenStopped(opf => opf.Stop());
             });
 
-            Log.CloseAndFlush();
-            OpenPasswordFilterClient.Dispose();
+            x.SetServiceName("OpenPasswordFilter");
+            x.SetDisplayName("Open Password Filter");
+            x.SetDescription("Custom service to better protect and control Active Directory domain passwords.");
+        });
 
-            var exitCodeValue = (int)Convert.ChangeType(exitCode, exitCode.GetTypeCode());
-            Environment.ExitCode = exitCodeValue;
-        }
+        Log.CloseAndFlush();
+
+        Environment.ExitCode = (int)Convert.ChangeType(exitCode, exitCode.GetTypeCode());
     }
 }

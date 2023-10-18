@@ -25,7 +25,7 @@ namespace OPFService.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
         public bool PwnedPasswordsAPIEnabled {
             get {
                 return ((bool)(this["PwnedPasswordsAPIEnabled"]));
@@ -70,7 +70,7 @@ namespace OPFService.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
         public bool PwnedLocalMySQLDB {
             get {
                 return ((bool)(this["PwnedLocalMySQLDB"]));
@@ -97,11 +97,74 @@ namespace OPFService.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool OPFMatchPathEnabled {
+            get {
+                return ((bool)(this["OPFMatchPathEnabled"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool OPFContPathEnabled {
+            get {
+                return ((bool)(this["OPFContPathEnabled"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool OPFRegexPathEnabled {
+            get {
+                return ((bool)(this["OPFRegexPathEnabled"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool OPFGroupPathEnabled {
+            get {
+                return ((bool)(this["OPFGroupPathEnabled"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("Server=myServerAddress;Database=myDataBase;IntegratedSecurity=yes;Uid=auth_window" +
-            "s;SslMode=Required;UseCompression=True;\r\n")]
+            "s;SslMode=Required;UseCompression=True;")]
         public string PwnedLocalMySQLDBConnString {
             get {
                 return ((string)(this["PwnedLocalMySQLDBConnString"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool OPFActiveDirectoryEnabled {
+            get {
+                return ((bool)(this["OPFActiveDirectoryEnabled"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("5999")]
+        public int Port {
+            get {
+                return ((int)(this["Port"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("Information")]
+        public global::Serilog.Events.LogEventLevel LogLevel {
+            get {
+                return ((global::Serilog.Events.LogEventLevel)(this["LogLevel"]));
             }
         }
     }

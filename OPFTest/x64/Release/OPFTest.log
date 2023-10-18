@@ -1,15 +1,15 @@
 ﻿  OPFTest.cpp
-OPFTest.cpp(69): warning C4267: "=": Konvertierung von "size_t" nach "USHORT", Datenverlust möglich
-OPFTest.cpp(70): warning C4267: "=": Konvertierung von "size_t" nach "USHORT", Datenverlust möglich
-OPFTest.cpp(73): warning C4267: "=": Konvertierung von "size_t" nach "USHORT", Datenverlust möglich
-OPFTest.cpp(74): warning C4267: "=": Konvertierung von "size_t" nach "USHORT", Datenverlust möglich
-OPFTest.cpp(60): warning C4477: "printf": Die Formatzeichenfolge "%08x" erfordert ein Argument vom Typ "unsigned int", das variadic-Argument "1" weist aber den Typ "HMODULE" auf.
-OPFTest.cpp(60): warning C4313: "printf": "%x" in der Formatzeichenfolge steht mit dem Argument "1" vom Typ "HMODULE" in Konflikt.
-OPFTest.cpp(64): warning C4477: "printf": Die Formatzeichenfolge "%08x" erfordert ein Argument vom Typ "unsigned int", das variadic-Argument "1" weist aber den Typ "PasswordFilter_t" auf.
-OPFTest.cpp(64): warning C4313: "printf": "%x" in der Formatzeichenfolge steht mit dem Argument "1" vom Typ "PasswordFilter_t" in Konflikt.
+D:\Dev\OpenPasswordFilter\OPFTest\OPFTest.cpp(60,10): warning C4477: 'printf' : format string '%08x' requires an argument of type 'unsigned int', but variadic argument 1 has type 'HMODULE'
+D:\Dev\OpenPasswordFilter\OPFTest\OPFTest.cpp(60,10): warning C4313: 'printf': '%x' in format string conflicts with argument 1 of type 'HMODULE'
+D:\Dev\OpenPasswordFilter\OPFTest\OPFTest.cpp(64,11): warning C4477: 'printf' : format string '%08x' requires an argument of type 'unsigned int', but variadic argument 1 has type 'PasswordFilter_t'
+D:\Dev\OpenPasswordFilter\OPFTest\OPFTest.cpp(64,11): warning C4313: 'printf': '%x' in format string conflicts with argument 1 of type 'PasswordFilter_t'
+D:\Dev\OpenPasswordFilter\OPFTest\OPFTest.cpp(69,39): warning C4267: '=': conversion from 'size_t' to 'USHORT', possible loss of data
+D:\Dev\OpenPasswordFilter\OPFTest\OPFTest.cpp(70,46): warning C4267: '=': conversion from 'size_t' to 'USHORT', possible loss of data
+D:\Dev\OpenPasswordFilter\OPFTest\OPFTest.cpp(73,34): warning C4267: '=': conversion from 'size_t' to 'USHORT', possible loss of data
+D:\Dev\OpenPasswordFilter\OPFTest\OPFTest.cpp(74,41): warning C4267: '=': conversion from 'size_t' to 'USHORT', possible loss of data
   stdafx.cpp
-  Code wird generiert.
-  Codegenerierung ist abgeschlossen.
-  All 8 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
-  OPFTest.vcxproj -> C:\_GIT\OpenPasswordFilter\x64\Release\OPFTest.exe
-  OPFTest.vcxproj -> C:\_GIT\OpenPasswordFilter\x64\Release\OPFTest.pdb (Full PDB)
+  Generating code
+  Previous IPDB not found, fall back to full compilation.
+  All 6 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  Finished generating code
+  OPFTest.vcxproj -> D:\Dev\OpenPasswordFilter\x64\Release\OPFTest.exe

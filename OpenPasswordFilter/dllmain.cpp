@@ -41,6 +41,7 @@
 #include <SubAuth.h>
 #include <process.h>
 #include <codecvt>
+#include <string>
 
 #pragma comment(lib, "Ws2_32.lib")
 
@@ -165,6 +166,25 @@ void askServer(SOCKET sock, PUNICODE_STRING AccountName, PUNICODE_STRING Passwor
 	}
 }
 
+bool GetRegistryConfiguration(const wchar_t* regKey, wchar_t* ipAddress, wchar_t* port) {
+	HKEY hKey = HKEY_LOCAL_MACHINE;
+	DWORD dataSize = 0;
+
+	if (RegOpenKeyExW(hKey, regKey, 0, KEY_READ, &hKey) == ERROR_SUCCESS) {
+		dataSize = sizeof(wchar_t) * 256;
+		if (RegQueryValueExW(hKey, L"ServiceIP", NULL, NULL, (LPBYTE)ipAddress, &dataSize) == ERROR_SUCCESS) {
+			dataSize = sizeof(wchar_t) * 16;
+			if (RegQueryValueExW(hKey, L"ServicePort", NULL, NULL, (LPBYTE)port, &dataSize) == ERROR_SUCCESS) {
+				RegCloseKey(hKey);
+				return true; // Configuration values successfully retrieved
+			}
+		}
+		RegCloseKey(hKey);
+	}
+	return false; // Failed to retrieve configuration values
+}
+
+
 //
 // In this function, we establish a TCP connection to 127.0.0.1:5999 and determine
 // whether the indicated password is acceptable according to the filter service.
@@ -175,9 +195,9 @@ unsigned int __stdcall CreateSocket(void *v) {
 	PasswordFilterAccount *pfAccount = static_cast<PasswordFilterAccount*>(v);
 
 	SOCKET sock = INVALID_SOCKET;
-	struct addrinfo *result = NULL;
-	struct addrinfo *ptr = NULL;
-	struct addrinfo hints;
+	struct addrinfoW* result = NULL;
+	struct addrinfoW* ptr = NULL;
+	struct addrinfoW hints;
 	bPasswordOk = TRUE; // set fail open
 
 	int i;
@@ -187,28 +207,32 @@ unsigned int __stdcall CreateSocket(void *v) {
 	hints.ai_socktype = SOCK_STREAM;
 	hints.ai_protocol = IPPROTO_TCP;
 
-	// This butt-ugly loop is straight out of Microsoft's reference example
-	// for a TCP client.  It's not my style, but how can the reference be
-	// wrong? ;-)
-	i = getaddrinfo("127.0.0.1", "5999", &hints, &result);
-	if (i == 0) {
-		for (ptr = result; ptr != NULL; ptr = ptr->ai_next) {
-			sock = socket(ptr->ai_family, ptr->ai_socktype, ptr->ai_protocol);
-			if (sock == INVALID_SOCKET) {
+	wchar_t ipAddress[256];
+	wchar_t port[16];
+	const wchar_t* regKey = L"Software\\OpenPasswordFilter";
+
+	if (GetRegistryConfiguration(regKey, ipAddress, port))
+	{
+		i = GetAddrInfoW(ipAddress, port, &hints, &result);
+		if (i == 0) {
+			for (ptr = result; ptr != NULL; ptr = ptr->ai_next) {
+				sock = socket(ptr->ai_family, ptr->ai_socktype, ptr->ai_protocol);
+				if (sock == INVALID_SOCKET) {
+					break;
+				}
+				i = connect(sock, ptr->ai_addr, (int)ptr->ai_addrlen);
+				if (i == SOCKET_ERROR) {
+					closesocket(sock);
+					sock = INVALID_SOCKET;
+					continue;
+				}
 				break;
 			}
-			i = connect(sock, ptr->ai_addr, (int)ptr->ai_addrlen);
-			if (i == SOCKET_ERROR) {
-				closesocket(sock);
-				sock = INVALID_SOCKET;
-				continue;
-			}
-			break;
-		}
 
-		if (sock != INVALID_SOCKET) {
-			askServer(sock, pfAccount->AccountName, pfAccount->Password);
-			closesocket(sock);
+			if (sock != INVALID_SOCKET) {
+				askServer(sock, pfAccount->AccountName, pfAccount->Password);
+				closesocket(sock);
+			}
 		}
 	}
 
