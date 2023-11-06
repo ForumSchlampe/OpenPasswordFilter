@@ -331,3 +331,4 @@ ASALocalRun/
 /OpenPasswordFilter.VC.VC.opendb
 *.log
 .vs
+/OPFTest/OPFTest.vcxproj.user
