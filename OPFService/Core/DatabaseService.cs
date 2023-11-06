@@ -26,7 +26,7 @@ public sealed class DatabaseService
         if (byHash)
         {
             var passwordHash = StringUtilities.GetPasswordHash(password);
-            query = $"SELECT * FROM Passwordlist WHERE Passwords LIKE '%{passwordHash.Substring(5)}%'";
+            query = $"SELECT * FROM Passwordlist WHERE Passwords LIKE '{passwordHash}%'";
         }
 
         try
