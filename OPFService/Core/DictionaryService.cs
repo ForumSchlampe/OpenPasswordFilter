@@ -30,9 +30,9 @@ public sealed class DictionaryService
     private readonly string forbiddenPasswordsFilePath;
     private readonly string forbiddenSubstringsFilePath;
     private readonly string forbiddenRegexesFilePath;
-    private HashSet<string> forbiddenPasswords;
-    private HashSet<string> forbiddenSubstrings;
-    private HashSet<Regex> forbiddenRegexes;
+    private HashSet<string> forbiddenPasswords = new();
+    private HashSet<string> forbiddenSubstrings = new();
+    private HashSet<Regex> forbiddenRegexes = new();
     private DateTime forbiddenPasswordsFileModTime;
     private DateTime forbiddenSubstringsFileModTime;
     private DateTime forbiddenRegexesFileModTime;
@@ -44,13 +44,19 @@ public sealed class DictionaryService
         this.forbiddenRegexesFilePath = forbiddenRegexesFilePath;
     }
 
-    public bool DoesPasswordHaveForbiddenSubstring(string password)
+    public bool DoesPasswordHaveForbiddenSubstring(string password, ushort percent)
     {
         var methodName = $"{nameof(DictionaryService)}::{nameof(DoesPasswordHaveForbiddenSubstring)}";
 
-        this.forbiddenSubstrings = FileUtilities.ReadTextFileIfModified(this.forbiddenSubstringsFilePath, ref this.forbiddenSubstringsFileModTime);
+        var content = FileUtilities.ReadTextFileIfModified(this.forbiddenSubstringsFilePath, ref this.forbiddenSubstringsFileModTime, out var isModified);
+        if (isModified)
+        {
+            this.forbiddenSubstrings = content;
+        }
 
-        var forbiddenSubstring = this.forbiddenSubstrings.FirstOrDefault(password.Contains);
+        //var forbiddenSubstring = this.forbiddenSubstrings.FirstOrDefault(password.Contains);
+        var forbiddenSubstring = this.forbiddenSubstrings.FirstOrDefault(substr => StringUtilities.PercentageMatch(password, substr, percent));
+
         if (!string.IsNullOrEmpty(forbiddenSubstring))
         {
             this.logger.Debug($"[{methodName}] - Given password contains forbidden substring. " +
@@ -66,7 +72,11 @@ public sealed class DictionaryService
     {
         var methodName = $"{nameof(DictionaryService)}::{nameof(IsPasswordForbidden)}";
 
-        this.forbiddenPasswords = FileUtilities.ReadTextFileIfModified(this.forbiddenPasswordsFilePath, ref this.forbiddenPasswordsFileModTime);
+        var content = FileUtilities.ReadTextFileIfModified(this.forbiddenPasswordsFilePath, ref this.forbiddenPasswordsFileModTime, out var isModified);
+        if (isModified)
+        {
+            this.forbiddenPasswords = content;
+        }
 
         if (this.forbiddenPasswords.Contains(password))
         {
@@ -81,7 +91,11 @@ public sealed class DictionaryService
     {
         var methodName = $"{nameof(DictionaryService)}::{nameof(DoesPasswordMatchForbiddenPattern)}";
 
-        this.forbiddenRegexes = FileUtilities.ReadRegexesFileIfModified(this.forbiddenRegexesFilePath, ref forbiddenRegexesFileModTime);
+        var content = FileUtilities.ReadRegexesFileIfModified(this.forbiddenRegexesFilePath, ref forbiddenRegexesFileModTime, out var isModified);
+        if (isModified)
+        {
+            this.forbiddenRegexes = content;
+        }
 
         var regex = this.forbiddenRegexes.FirstOrDefault(r => r.Match(password).Success);
         if (regex is not null)

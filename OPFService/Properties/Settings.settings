@@ -50,5 +50,28 @@
     <Setting Name="LogLevel" Type="Serilog.Events.LogEventLevel" Scope="Application">
       <Value Profile="(Default)">Information</Value>
     </Setting>
+    <Setting Name="OPFActiveDirectoryProperties" Type="System.Collections.Specialized.StringCollection" Scope="Application">
+      <Value Profile="(Default)">&lt;?xml version="1.0" encoding="utf-16"?&gt;
+&lt;ArrayOfString xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"&gt;
+  &lt;string&gt;GivenName&lt;/string&gt;
+  &lt;string&gt;Surname&lt;/string&gt;
+  &lt;string&gt;EmailAddress&lt;/string&gt;
+  &lt;string&gt;SamAccountName&lt;/string&gt;
+  &lt;string&gt;UserPrincipalName&lt;/string&gt;
+  &lt;string&gt;DisplayName&lt;/string&gt;
+  &lt;string&gt;Description&lt;/string&gt;
+  &lt;string&gt;EmployeeId&lt;/string&gt;
+  &lt;string&gt;VoiceTelephoneNumber&lt;/string&gt;
+&lt;/ArrayOfString&gt;</Value>
+    </Setting>
+    <Setting Name="OPFContPercentage" Type="System.UInt16" Scope="Application">
+      <Value Profile="(Default)">80</Value>
+    </Setting>
+    <Setting Name="OPFActiveDirectoryPropertiesPercentage" Type="System.UInt16" Scope="Application">
+      <Value Profile="(Default)">80</Value>
+    </Setting>
+    <Setting Name="PwnedLocalDbByHash" Type="System.Boolean" Scope="Application">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

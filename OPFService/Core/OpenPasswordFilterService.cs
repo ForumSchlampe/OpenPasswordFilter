@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Serilog.Context;
+using System;
 using System.Text;
 using Topshelf.Logging;
 using static OPFService.Core.NetworkService;
@@ -17,6 +18,8 @@ public sealed class OpenPasswordFilterService
 
     public OpenPasswordFilterService()
     {
+        this.logger.InfoFormat("Ein Event mit {@EventData}", new { MyKey = "my value" });
+
         this.logger.Debug("Initializing Open Password Filter Service started");
 
         this.networkService = new();
@@ -55,7 +58,7 @@ public sealed class OpenPasswordFilterService
 
     private void ClientDataReceived(object sender, ClientDataReceivedEventArgs e)
     {
-        var methodName = $"{nameof(NetworkService)}::{nameof(ClientDataReceived)}";
+        var methodName = $"{nameof(OpenPasswordFilterService)}::{nameof(ClientDataReceived)}";
         this.logger.Debug($"[{methodName}] - Client {e.ConnectionId} {e.IpAddress} message {e.Data.Length} received");
 
         string message = Encoding.UTF8.GetString(e.Data);
@@ -85,9 +88,9 @@ public sealed class OpenPasswordFilterService
 
     private bool CheckPassword(string username, string password, string ipAddress)
     {
-        var methodName = $"{nameof(NetworkService)}::{nameof(CheckPassword)}";
+        var methodName = $"{nameof(OpenPasswordFilterService)}::{nameof(CheckPassword)}";
 
-        this.logger.Info($"[{methodName}] - Checking password for user with username = {username} and client ip = {ipAddress}");
+        this.logger.InfoFormat("Checking password for user with username = {username} and client ip = {ipAddress}", username, ipAddress);
 
         bool isPasswordBad = false;
         string resultInfo = string.Empty;
@@ -104,7 +107,8 @@ public sealed class OpenPasswordFilterService
 
                 if (Properties.Settings.Default.OPFContPathEnabled
                     && !isPasswordBad
-                    && (isPasswordBad = this.dictionaryService.DoesPasswordHaveForbiddenSubstring(password)))
+                    && (isPasswordBad = this.dictionaryService.DoesPasswordHaveForbiddenSubstring(password,
+                                                                                                  Properties.Settings.Default.OPFContPercentage)))
                 {
                     resultInfo = $"the forbidden substrings file {Properties.Settings.Default.OPFContPath}";
                 }
@@ -118,7 +122,10 @@ public sealed class OpenPasswordFilterService
 
                 if (Properties.Settings.Default.OPFActiveDirectoryEnabled
                     && !isPasswordBad
-                    && (isPasswordBad = this.directoryService.DoesPasswordHaveUserInfo(username, password)))
+                    && (isPasswordBad = this.directoryService.DoesPasswordHaveUserInfo(username,
+                                                                                       password,
+                                                                                       Properties.Settings.Default.OPFActiveDirectoryProperties,
+                                                                                       Properties.Settings.Default.OPFContPercentage)))
                 {
                     resultInfo = $"Active Directory (password contains user information)";
                 }
@@ -132,13 +139,15 @@ public sealed class OpenPasswordFilterService
 
                 if (Properties.Settings.Default.PwnedLocalMSSQLDB
                     && !isPasswordBad
-                    && (isPasswordBad = this.sqlService.Value.CheckPassword(password)))
+                    && (isPasswordBad = this.sqlService.Value.CheckPassword(password,
+                                                                            Properties.Settings.Default.PwnedLocalDbByHash)))
                 {
                     resultInfo = $"breach corpuses at haveibeenpwned.com on local MSSQL database";
                 }
                 else if (Properties.Settings.Default.PwnedLocalMySQLDB
                     && !isPasswordBad
-                    && (isPasswordBad = this.mysqlService.Value.CheckPassword(password)))
+                    && (isPasswordBad = this.mysqlService.Value.CheckPassword(password,
+                                                                              Properties.Settings.Default.PwnedLocalDbByHash)))
                 {
                     resultInfo = $"reach corpuses at haveibeenpwned.com on local MySQL database";
                 }
@@ -146,15 +155,16 @@ public sealed class OpenPasswordFilterService
 
             if (resultInfo is "")
             {
-                this.logger.Info($"Password OK!"
-                 + $" Username = {username}"
-                 + $" ClientIP = {ipAddress}");
+                this.logger.InfoFormat("Password OK!"
+                 + " Username = {username}"
+                 + " ClientIP = {ipAddress}", username, ipAddress);
             }
             else
             {
-                this.logger.Info($"Password NOT OK! Information about password found in {resultInfo}."
-                 + $" Username = {username}"
-                 + $" ClientIP = {ipAddress}");
+                LogContext.PushProperty("USER", username);
+                this.logger.InfoFormat("Password NOT OK! Information about password found in {resultInfo}."
+                 + " Username = {username}"
+                 + " ClientIP = {ipAddress}", resultInfo, username, ipAddress);
             }
         }
         catch (Exception ex)

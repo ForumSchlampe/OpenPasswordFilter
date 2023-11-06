@@ -11,9 +11,10 @@ public sealed class FileUtilities
 {
     private static readonly LogWriter logger = HostLogger.Get<FileUtilities>();
 
-    public static HashSet<string> ReadTextFileIfModified(string filePath, ref DateTime currentLastModTime)
+    public static HashSet<string> ReadTextFileIfModified(string filePath, ref DateTime currentLastModTime, out bool isModified)
     {
-        if (IsFileModified(filePath, currentLastModTime))
+        isModified = IsFileModified(filePath, currentLastModTime);
+        if (isModified)
         {
             currentLastModTime = File.GetLastWriteTime(filePath);
             return ReadTextFile(filePath);
@@ -22,9 +23,10 @@ public sealed class FileUtilities
         return new();
     }
 
-    public static HashSet<Regex> ReadRegexesFileIfModified(string filePath, ref DateTime currentLastModTime)
+    public static HashSet<Regex> ReadRegexesFileIfModified(string filePath, ref DateTime currentLastModTime, out bool isModified)
     {
-        if (IsFileModified(filePath, currentLastModTime))
+        isModified = IsFileModified(filePath, currentLastModTime);
+        if (isModified)
         {
             currentLastModTime = File.GetLastWriteTime(filePath);
             return ReadRegexesFile(filePath);

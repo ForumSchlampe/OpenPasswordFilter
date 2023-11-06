@@ -31,6 +31,7 @@ static class Program
             x.RunAsLocalSystem();
 
             var loggerConfig = new LoggerConfiguration()
+                //.Enrich.FromLogContext()
                 .MinimumLevel.ControlledBy(new()
                 {
                     MinimumLevel = Properties.Settings.Default.LogLevel

@@ -1,8 +1,7 @@
-﻿using System;
+﻿using OPFService.Utilities;
+using System;
 using System.IO;
 using System.Net;
-using System.Security.Cryptography;
-using System.Text;
 using Topshelf.Logging;
 
 // Troy Hunt has kindly made available a k-anonymity type query API for checking
@@ -31,7 +30,7 @@ public sealed class PwnedService
 
         var isPasswordForbidden = false;
 
-        var passwordHash = GetPasswordHash(password);
+        var passwordHash = StringUtilities.GetPasswordHash(password);
         var passwordHashPrefix = passwordHash.Substring(0, 5);
 
         Uri uri = new($"https://api.pwnedpasswords.com/range/{passwordHashPrefix}");
@@ -59,12 +58,5 @@ public sealed class PwnedService
         }
 
         return isPasswordForbidden;
-    }
-
-    private static string GetPasswordHash(string password)
-    {
-        using SHA1Managed sh1 = new();
-        var passwordHashBytes = sh1.ComputeHash(Encoding.UTF8.GetBytes(password));
-        return BitConverter.ToString(passwordHashBytes).Replace("-", string.Empty);
     }
 }

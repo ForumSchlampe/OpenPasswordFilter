@@ -18,6 +18,7 @@
 using OPFService.Utilities;
 using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.DirectoryServices.AccountManagement;
 using System.Linq;
 using Topshelf.Logging;
@@ -28,7 +29,7 @@ public sealed class DirectoryService
 {
     private readonly LogWriter logger = HostLogger.Get<DirectoryService>();
     private readonly string groupsToCheckFilePath;
-    private HashSet<string> groupsToCheck;
+    private HashSet<string> groupsToCheck = new();
     private DateTime groupsToCheckFileModTime;
 
     public DirectoryService(string groupsToCheckFilePath)
@@ -40,7 +41,11 @@ public sealed class DirectoryService
     {
         var methodName = $"{nameof(DirectoryService)}::{nameof(ContainsInGroup)}";
 
-        this.groupsToCheck = FileUtilities.ReadTextFileIfModified(this.groupsToCheckFilePath, ref this.groupsToCheckFileModTime);
+        var content = FileUtilities.ReadTextFileIfModified(this.groupsToCheckFilePath, ref this.groupsToCheckFileModTime, out var isModiefied);
+        if (isModiefied)
+        {
+            this.groupsToCheck = content;
+        }
 
         if (!groupsToCheck.Any())
         {
@@ -74,31 +79,41 @@ public sealed class DirectoryService
         return false;
     }
 
-    public bool DoesPasswordHaveUserInfo(string username, string password)
+    public bool DoesPasswordHaveUserInfo(string username, string password, StringCollection properties, ushort percent)
     {
         var methodName = $"{nameof(DictionaryService)}::{nameof(DoesPasswordHaveUserInfo)}";
 
-        Dictionary<string, string> userInfo = new();
-
         using PrincipalContext context = new(ContextType.Domain);
         using UserPrincipal user = UserPrincipal.FindByIdentity(context, username);
+
         if (user is not null)
         {
-            userInfo.Add("FullName", user.DisplayName);
-            userInfo.Add("GivenName", user.GivenName);
-            userInfo.Add("Surname", user.Surname);
-            userInfo.Add("SamAccountName", user.SamAccountName);
-        }
+            var passwordContainingUserInfo = GetUserProperties(user)
+                .Where(u => !string.IsNullOrEmpty(u.Value) && properties.Contains(u.Key))
+                .FirstOrDefault(u => StringUtilities.PercentageMatch(password, u.Value, percent)).Key;
 
-        var passwordContainingUserInfo = userInfo.FirstOrDefault(u => password.Contains(u.Value)).Key;
-        if (!string.IsNullOrEmpty(passwordContainingUserInfo))
-        {
-            this.logger.Debug($"[{methodName}] - Given password contains user info. " +
-                $"Password = . User Info = {passwordContainingUserInfo}");
+            if (!string.IsNullOrEmpty(passwordContainingUserInfo))
+            {
+                this.logger.Debug($"[{methodName}] - Given password contains user info. " +
+                    $"Password = . User Info = {passwordContainingUserInfo}");
 
-            return true;
+                return true;
+            }
         }
 
         return false;
     }
+
+    private Dictionary<string, string> GetUserProperties(UserPrincipal user) => new()
+        {
+            { "GivenName", user.GivenName },
+            { "Surname", user.Surname },
+            { "EmailAddress", user.EmailAddress },
+            { "SamAccountName", user.SamAccountName },
+            { "UserPrincipalName", user.UserPrincipalName },
+            { "DisplayName", user.DisplayName },
+            { "Description", user.Description },
+            { "EmployeeId", user.EmployeeId },
+            { "VoiceTelephoneNumber", user.VoiceTelephoneNumber }
+        };
 }

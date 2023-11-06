@@ -1,4 +1,5 @@
-﻿using System;
+﻿using OPFService.Utilities;
+using System;
 using System.Data.Common;
 using Topshelf.Logging;
 
@@ -6,8 +7,6 @@ namespace OPFService.Core;
 
 public sealed class DatabaseService
 {
-    private const string GET_PASSWORD_QUERY = "SELECT * FROM Passwordlist WHERE Passwords='{0}'";
-
     private readonly LogWriter logger = HostLogger.Get<DatabaseService>();
     private readonly DbProviderFactory dbProviderFactory;
 
@@ -19,11 +18,17 @@ public sealed class DatabaseService
         this.connectionString = connectionString;
     }
 
-    public bool CheckPassword(string password)
+    public bool CheckPassword(string password, bool byHash)
     {
         var methodName = $"{nameof(DatabaseService)}::{nameof(CheckPassword)}";
 
-        var query = string.Format(GET_PASSWORD_QUERY, password);
+        var query = $"SELECT * FROM Passwordlist WHERE Passwords='{password}'";
+        if (byHash)
+        {
+            var passwordHash = StringUtilities.GetPasswordHash(password);
+            query = $"SELECT * FROM Passwordlist WHERE Passwords LIKE '%{passwordHash.Substring(5)}%'";
+        }
+
         try
         {
             using var dbConnection = CreateDbConnection(connectionString);

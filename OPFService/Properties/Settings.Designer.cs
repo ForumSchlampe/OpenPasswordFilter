@@ -167,5 +167,52 @@ namespace OPFService.Properties {
                 return ((global::Serilog.Events.LogEventLevel)(this["LogLevel"]));
             }
         }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute(@"<?xml version=""1.0"" encoding=""utf-16""?>
+<ArrayOfString xmlns:xsd=""http://www.w3.org/2001/XMLSchema"" xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance"">
+  <string>GivenName</string>
+  <string>Surname</string>
+  <string>EmailAddress</string>
+  <string>SamAccountName</string>
+  <string>UserPrincipalName</string>
+  <string>DisplayName</string>
+  <string>Description</string>
+  <string>EmployeeId</string>
+  <string>VoiceTelephoneNumber</string>
+</ArrayOfString>")]
+        public global::System.Collections.Specialized.StringCollection OPFActiveDirectoryProperties {
+            get {
+                return ((global::System.Collections.Specialized.StringCollection)(this["OPFActiveDirectoryProperties"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("80")]
+        public ushort OPFContPercentage {
+            get {
+                return ((ushort)(this["OPFContPercentage"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("80")]
+        public ushort OPFActiveDirectoryPropertiesPercentage {
+            get {
+                return ((ushort)(this["OPFActiveDirectoryPropertiesPercentage"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool PwnedLocalDbByHash {
+            get {
+                return ((bool)(this["PwnedLocalDbByHash"]));
+            }
+        }
     }
 }

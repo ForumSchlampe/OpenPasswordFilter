@@ -98,7 +98,10 @@ public sealed class NetworkService
         var methodName = $"{nameof(NetworkService)}::{nameof(StopServer)}";
         this.logger.Debug($"[{methodName}] - Stop server...");
 
-        this.tcpsharpServer.StopListening();
+        if (this.tcpsharpServer.Listening)
+        {
+            this.tcpsharpServer.StopListening();
+        }
     }
 
     public void SendString(string connectionId, string message)
