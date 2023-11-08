@@ -57,7 +57,7 @@ public sealed class DatabaseService
 
         try
         {
-            var dbConnection = dbProviderFactory.CreateConnection();
+            var dbConnection = this.dbProviderFactory.CreateConnection();
             dbConnection.ConnectionString = connectionString;
 
             logger.Debug($"[{methodName}] - Db connection is successfully created. " +
