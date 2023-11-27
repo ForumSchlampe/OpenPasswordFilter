@@ -2,38 +2,29 @@ Introduction
 ------------
 OpenPasswordFilter is an open source custom password filter DLL and userspace service to better protect / control Active Directory domain passwords.
 
-The genesis of this idea comes from conducting many penetration tests where organizations have users who choose common passwords
-and the ultimate difficulty of controlling this behavior.  The fact is that any domain of size will have some user who chose
-`Password1` or `Summer2015` or `Company123` as their password.  Any intruder or low-privilege user who can guess or obtain
-usernames for the domain can easily run through these very common passwords and start expanding the level of access in the 
-domain.
+The genesis of this idea comes from conducting many penetration tests where organizations have users who choose common passwords and the ultimate difficulty of controlling this behavior.  The fact is that any domain of size will have some user who chose `Password1` or `Summer2015` or `Company123` as their password.  Any intruder or low-privilege user who can guess or obtain usernames for the domain can easily run through these very common passwords and start expanding the level of access in the domain.
 
-Microsoft provides a wonderful feature in Active Directory, which is the ability to create a custom password filter DLL.  This
-DLL is loaded by LSASS on boot (if configured), and will be queried for each new password users attempt to set.  The DLL simply
-replies with a `TRUE` or `FALSE`, as appropriate, to indicate that the password passes or fails the test.  
+Microsoft provides a wonderful feature in Active Directory, which is the ability to create a custom password filter DLL.  This DLL is loaded by LSASS on boot (if configured), and will be queried for each new password users attempt to set. The DLL simply replies with a `TRUE` or `FALSE`, as appropriate, to indicate that the password passes or fails the test.  
 
-There are some commercial options, but they are usually in the "call for pricing" category, and that makes it a little 
-prohibitive for some organizations to implement truly effective preventive controls for this class of very common bad passwords. 
+There are some commercial options, but they are usually in the "call for pricing" category, and that makes it a little prohibitive for some organizations to implement truly effective preventive controls for this class of very common bad passwords. 
 
-This is where OpenPasswordFilter comes in -- an open source solution to add basic dictionary-based rejection of common
-passwords, as well as a check against [haveibeenpwned.com](https://haveibeenpwned.com/)'s wonderful API.
+This is where OpenPasswordFilter comes in -- an open source solution to add basic dictionary-based rejection of common passwords, as well as a check against [haveibeenpwned.com](https://haveibeenpwned.com/)'s wonderful API.
 
 OPF is comprised of two main parts:
    1. OpenPasswordFilter.dll -- this is a custom password filter DLL that can be loaded by LSASS to vet incoming password changes.
    2. OPFService.exe -- this is a C#-based service binary that provides a local user-space service for maintaining the dictionary and servicing requests.
   
-The DLL communicates with the service on the loopback network interface to check passwords against the configured database
-of forbidden values, the pwnedpasswords API of [haveibeenpwned.com](https://haveibeenpwned.com/) (cheers to Troy Hunt for that - what a guy) as well as ensuring that the account's SAMAccountName, given name, surname, and display name are not in the password. This architecture is selected because it is difficult to reload the DLL after boot, and administrators are likely loathe to reboot their DCs when they want to add another forbidden password to the list.  Just bear in mind how this architecture works so you understand what's going on.
-
-**NOTE** The current version is pretty beta!  I have tested it on some of my DCs, but your mileage may vary and you may wish to test in a safe location before using this in production.
+The DLL communicates with the service on the loopback network interface to check passwords against the configured database of forbidden values, the pwnedpasswords API of [haveibeenpwned.com](https://haveibeenpwned.com/) (cheers to Troy Hunt for that - what a guy) as well as ensuring that the account's SAMAccountName, given name, surname, and display name are not in the password. This architecture is selected because it is difficult to reload the DLL after boot, and administrators are likely loathe to reboot their DCs when they want to add another forbidden password to the list.  Just bear in mind how this architecture works so you understand what's going on. Please keep in mind passwords will be rejected when the Service is not reachable!
 
 Goal of this Fork
 -----------------
+- Code Cleanup
 - Handle very large password lists  
 -> There is no more 32Bit support  
-- More configuration options, currently  
--> Configureable path for password lists  
--> haveibeenpwned API enable/disable ability  
+- Add local Database options (Plain + SHA1)
+-> You can Download haveibeenpwned password DB ( https://github.com/HaveIBeenPwned/PwnedPasswordsDownloader )
+- Add Active Directory
+- Confoguration Options 
 
 Installation
 ------------
