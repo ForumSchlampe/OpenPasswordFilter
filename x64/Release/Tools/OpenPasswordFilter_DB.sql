@@ -1,7 +1,6 @@
 USE [master]
 GO
 
-/****** Object:  Database [OpenPasswordFilter]    Script Date: 07.11.2023 15:35:55 ******/
 CREATE DATABASE [OpenPasswordFilter]
  CONTAINMENT = NONE
  ON  PRIMARY 
@@ -110,11 +109,9 @@ GO
 ALTER DATABASE [OpenPasswordFilter] SET  READ_WRITE 
 GO
 
-
 USE [OpenPasswordFilter]
 GO
 
-/****** Object:  Table [dbo].[Passwordlist]    Script Date: 07.11.2023 15:36:49 ******/
 SET ANSI_NULLS ON
 GO
 
@@ -132,7 +129,6 @@ GO
 SET ANSI_PADDING ON
 GO
 
-/****** Object:  Index [CI_Passwords]    Script Date: 07.11.2023 15:38:01 ******/
 CREATE UNIQUE NONCLUSTERED INDEX [CI_Passwords] ON [dbo].[Passwordlist]
 (
 	[Passwords] ASC
