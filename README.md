@@ -18,50 +18,46 @@ The DLL communicates with the service on the loopback network interface to check
 
 Goal of this Fork
 -----------------
-- Code Cleanup
+- Code refactoring
+- .net Framework 4.8 pre requirement
 - Handle very large password lists  
 -> There is no more 32Bit support  
 - Add local Database options (Plain + SHA1)
 -> You can Download haveibeenpwned password DB ( https://github.com/HaveIBeenPwned/PwnedPasswordsDownloader )
 - Add Active Directory
-- Confoguration Options 
+- Confoguration Options
+- Added logging to application log (Source OpenPasswordFilter)
 
 Installation
 ------------
 You can download a precompiled 64-bit version of OPF from the following link:
 
-[OPFService.exe](https://github.com/ForumSchlampe/OpenPasswordFilter/tree/master/OPFService/bin/x64/Release)  
-[OpenPasswordFilter.dll](-missing-)  
+https://github.com/ForumSchlampe/OpenPasswordFilter/releases/tag/v1.0.0
    
-  1. Copy `OpenPasswordFilter.dll` to `%WINDIR%\System32`
+  1. Make sure you have .net Framework 4.8 installed
   
-  2. Configure the `HKLM\SYSTEM\CurrentControlSet\Control\Lsa\Notification Packages` registry key with the DLL name  
-  **Note** do not include the `.dll` extension in the registry key -- just `OpenPasswordFilter`.
+  2. Create an gmsa account which domain controllers are able to retrieve passwort
+      Something like: 
+      (run once) New-ADServiceAccount -Name opf_service -DNSHostName opfservice.your.domain -PrincipalsAllowedToRetrieveManagedPassword "Domain Controllers"
+      (run on each domain controller) Install-ADServiceAccount opf_service$
   
-  3. Copy OPFService.exe and OPFService.exe.config to a destination you like, like C:\Program Files\OpenPasswordFilter
+  3. Extract Release ZIP File to C:\Program Files\OpenPasswordFilter
   
-  4. Copy your lists to whatever destination you want, sysvol is not the worst place to do this to have all domain controllers in sync.  
+  4. Copy your lists to whatever destination you want, sysvol is not the worst place to do this to have all domain controllers in sync but think about it with very large files. Default location:  C:\Program Files\OpenPasswordFilter\Data
      "opfmatch.txt"  
      "opfcont.txt"  
      "opfregex.txt"  
      "opfgroups.txt"  
-   **Note** The service checks file modification time at the start of servicing a request and will read in the lists again if it has changed, so restarting the OPF service when modifying the lists is not necessary.  
-   **Note** Working with large password files will lead in a huge memory overload (huge is very huge)  
+      **Note** Working with large password files will lead in a huge memory overload (huge is very huge)  
+      **Note** You can use emtpy ones (shipped with the release), disable those or use samples from here https://github.com/ForumSchlampe/OpenPasswordFilter/tree/master/SampleLists (not very large files included)
 
-   5. Edit OPFService.exe.config and set at least the path for  
-      "OPFMatchPath"  
-      "OPFContPath"  
-      "OPFRegexhPath"  
-      "OPFGroupsPath"  
+   5. Edit OPFService.exe.config to whatever your needs are, any checks which are set to true must reachable for the service otherwise opf service start will fail or all password change attemps are rejected. Hope OPFService.exe.config has comments which explain everything
 
-   6. Install the OPF Service  
-    -> sc create OPF binPath= <full path to exe>\opfservice.exe start= boot 
+   6. Copy C:\Program Files\OpenPasswordFilter\Tools\OpenPasswordFilter.dll to %windir%\system32
 
-   7. If everything is in its place, try to start the service  
-    -> sc start OPF  
-    or  
-    -> sc stop OPF   
-    **Note** Working with a very large password file will lead to an extended starttime so there might be a message about "not responding"  
+   7. Run C:\Program Files\OpenPasswordFilter\Tools\Install.ps1 as administrator
+
+   8. Reboot your Domain Controllers
 
 ### opfmatch.txt and opfcont.txt
 These should contain one forbidden password per line, such as:
@@ -73,9 +69,7 @@ These should contain one forbidden password per line, such as:
     Summer2015
     ...
 
-Passwords in `opfmatch.txt` will be tested for full matches, and those in `opfcont.txt` will be tested for a partial match. This
-is useful for rejecting any password containing poison strings such as `password` and `welcome`. I recommend constructing a list
-of bad seeds, then using hashcat rules to build `opfcont.txt` with the sort of leet mangling users are likely to try, like so:
+Passwords in `opfmatch.txt` will be tested for full matches, and those in `opfcont.txt` will be tested for a partial match which can be adjusted in configuration. This is useful for rejecting any password containing poison strings such as `password` and `welcome`. I recommend constructing a list of bad seeds, then using hashcat rules to build `opfcont.txt` with the sort of leet mangling users are likely to try, like so:
 
 `hashcat -r /usr/share/hashcat/rules/Incisive-leetspeak.rule --stdout seedwordlist | tr A-Z a-z | sort | uniq > opfcont.txt`
 
@@ -85,23 +79,19 @@ format:
 `unix2dos opfcont.txt`
 
 ### opfregex.txt
-Similar to the opfmatch and opfconf files, include here regular expression - one per line - for invalid passwords. Example, 
-including 'xx.*xx' will catch all passwords that have two x's followed by any text followed by two x's. Keep this list short 
-as regular expression matching is more computationally expensive than simple matching or contains searches.
+Similar to the opfmatch and opfconf files, include here regular expression - one per line - for invalid passwords. Example, including 'xx.*xx' will catch all passwords that have two x's followed by any text followed by two x's. Keep this list short as regular expression matching is more computationally expensive than simple matching or contains searches.
+**Note** In the sample list, the regex will reject any password which contains lower case letters
 
 ### opfgroups.txt
-This file contains zero or more Active-Directory group names - one per line. These can be security or distribution groups. 
-A user is considered to be in a group if they are a descendent child of the group. A user's password will only be checked 
-if the user is a member of any group listed in this file. If the file is present but contains no groups then every user will be checked.
+This file contains zero or more Active-Directory group names - one per line. These can be security or distribution groups. A user is considered to be in a group if they are a descendent child of the group. A user's password will only be checked if the user is a member of any group listed in this file. If the file is present but contains no groups then every user will be checked!
+
+### PwnedLocal*SQL
+If you want to use a database as your password list you can do so with mysql and mssql, template to create the database you can find in "C:\Program Files\OpenPasswordFilter\Tools\OpenPasswordFilter_DB.sql"
+In Short, there must be a table wich is named "Passwordlist" which contains a column named "Passwords"
+You can enable SHA1 or disable it (clear type entries), with SHA1 enabled you are able to use the downloaded haveibeenpwned Database as source. haveibeenpwned has a delimiter ":" which states how often the password was used, you dont need this data just do not import this in the database 
 
 ## Event Logging
-The opfservice.exe application logs to the Application Event Log using codes 100, and 101. Searching the event log will identify what the opfservice is checking.
-If the service fails to start, it's likely an error ingesting the wordlists, and the line number of the problem entry will be
-written to the Application event log.
+The opfservice.exe application logs to the Application Event Log with the Event Source OpenPasswordFilter. Searching the event log will identify what the opfservice is checking. If the service fails to start, it's likely an error ingesting the wordlists, and the line number of the problem entry will be written to the Application event log.
 
 ## Production Installation Details
-This requires a 64 bit OS as the password filter bitness must match that of the OS and I see no reason to target x86. 
-
-If all has gone well, reboot your DC and test by using the normal GUI password reset function to choose a password that is on
-your forbidden list.
-
+This is tested on Windows Server 2012 R2, Windows Server 2016, Windows Server 2019, Windows Server 2022, Windows 10 (23h2), Windows 11 (23h2)
