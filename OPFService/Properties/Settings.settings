@@ -26,6 +26,9 @@
     <Setting Name="PwnedLocalMSSQLDBConnString" Type="System.String" Scope="Application">
       <Value Profile="(Default)">Server=myServerAddress;Database=myDataBase;Integrated Security=SSPI;Encrypt=true</Value>
     </Setting>
+    <Setting Name="PwnedLocalDbByHash" Type="System.Boolean" Scope="Application">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
     <Setting Name="OPFMatchPathEnabled" Type="System.Boolean" Scope="Application">
       <Value Profile="(Default)">True</Value>
     </Setting>
@@ -69,9 +72,6 @@
     </Setting>
     <Setting Name="OPFActiveDirectoryPropertiesPercentage" Type="System.UInt16" Scope="Application">
       <Value Profile="(Default)">80</Value>
-    </Setting>
-    <Setting Name="PwnedLocalDbByHash" Type="System.Boolean" Scope="Application">
-      <Value Profile="(Default)">False</Value>
     </Setting>
   </Settings>
 </SettingsFile>
