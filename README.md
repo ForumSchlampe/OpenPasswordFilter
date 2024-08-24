@@ -24,8 +24,8 @@ Goal of this Fork
 -> There is no more 32Bit support  
 - Add local Database options (Plain + SHA1)
 -> You can Download haveibeenpwned password DB ( https://github.com/HaveIBeenPwned/PwnedPasswordsDownloader )
-- Add Active Directory
-- Confoguration Options
+- Add Active Directory value checks
+- Configuration Options
 - Added logging to application log (Source OpenPasswordFilter)
 
 Installation
