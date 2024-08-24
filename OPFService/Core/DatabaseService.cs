@@ -1,4 +1,4 @@
-﻿using OPFService.Utilities;
+using OPFService.Utilities;
 using System;
 using System.Data.Common;
 using Topshelf.Logging;
@@ -9,7 +9,6 @@ public sealed class DatabaseService
 {
     private readonly LogWriter logger = HostLogger.Get<DatabaseService>();
     private readonly DbProviderFactory dbProviderFactory;
-
     private readonly string connectionString;
 
     public DatabaseService(string providerName, string connectionString)
@@ -21,25 +20,34 @@ public sealed class DatabaseService
     public bool CheckPassword(string password, bool byHash)
     {
         var methodName = $"{nameof(DatabaseService)}::{nameof(CheckPassword)}";
+        // bool isPasswordForbidden = false;
 
-        var query = $"SELECT * FROM Passwordlist WHERE Passwords='{password}'";
-        if (byHash)
-        {
-            var passwordHash = StringUtilities.GetPasswordHash(password);
-            query = $"SELECT * FROM Passwordlist WHERE Passwords LIKE '{passwordHash}%'";
-        }
-
+        // Passwortcheck in der DB      
         try
         {
+            // Abfrage in Klartext
+            var query = $"SELECT * FROM Passwordlist WHERE Passwords='{password}'";
             using var dbConnection = CreateDbConnection(connectionString);
             dbConnection.Open();
 
             using var command = CreateDbCommand(dbConnection, query);
             using var reader = command.ExecuteReader();
-            var isPasswordForbidden = reader.HasRows;
+            isPasswordForbidden = reader.HasRows;
+
+            // Wenn das Passwort in der ersten Abfrage nicht gefunden wird, prüfe in der Hashtabelle
+            if (!isPasswordForbidden && byHash)
+            {
+                // Abfrage in der Tabelle Passwordhashlist
+                var passwordHash = StringUtilities.GetPasswordHash(password);
+                query = $"SELECT * FROM Passwordhashlist WHERE Hashes='{passwordHash}%'";
+
+                using var hashCommand = CreateDbCommand(dbConnection, query);
+                using var hashReader = hashCommand.ExecuteReader();
+                isPasswordForbidden = hashReader.HasRows;
+            }
 
             this.logger.Debug($"[{methodName}] - Given password was checked successfully. " +
-                $"Is Password frobidden = {isPasswordForbidden}");
+                $"Is Password forbidden = {isPasswordForbidden}");
 
             return isPasswordForbidden;
         }
